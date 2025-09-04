@@ -10,16 +10,17 @@ def run_ocr(link: str, language: str = "original") -> str:
             prompt = (
                 "You are an OCR system. Your only task is to extract text from the image "
                 "and return it exactly as it appears. Do not analyze, interpret, comment, "
-                "or filter anything. Always try to extract as much text as possible, even if "
-                "the text is unclear, messy, or partially unreadable."
+                "or filter anything. Always try to extract as much text as possible, "
+                "even if the text is unclear, messy, distorted, or partially unreadable. "
+                "If something looks ambiguous, output your best guess."
             )
         else:
             prompt = (
                 f"You are an OCR and translation system. Extract all text from the image "
                 f"and translate it into {language}. Return only the translated text. "
-                "Do not analyze, interpret, comment, or filter anything. "
-                "Always try to extract and translate as much text as possible, "
-                "even if the text is unclear, messy, or partially unreadable."
+                "If you cannot fully understand the text, still provide your best possible translation. "
+                "If many words are unclear, summarize the general meaning. "
+                "Explicitly note where the text is unreadable instead of refusing."
             )
         response = client.chat.completions.create(
             model="gpt-4o-mini",
