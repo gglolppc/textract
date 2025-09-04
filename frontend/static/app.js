@@ -52,7 +52,7 @@ processBtn.addEventListener("click", async () => {
   formData.append("language", document.getElementById("lang").value);
 
   try {
-    const res = await fetch("/api/ocr/", {
+    const res = await fetch("/upload/", {
       method: "POST",
       body: formData
     });
