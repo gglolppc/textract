@@ -52,7 +52,7 @@ processBtn.addEventListener("click", async () => {
   formData.append("language", document.getElementById("lang").value);
 
   try {
-    const res = await fetch("http://127.0.0.1:8001/ocr", {
+    const res = await fetch("/api/ocr", {
       method: "POST",
       body: formData
     });
