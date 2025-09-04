@@ -57,7 +57,7 @@ processBtn.addEventListener("click", async () => {
       body: formData
     });
     const data = await res.json();
-    resultBlock.innerText = data.translated || data.original || "No text found.";
+    resultBlock.innerText = data.text || data.translated || data.original || "No text found.";
   } catch (e) {
     resultBlock.innerText = "Error: " + e;
   }
