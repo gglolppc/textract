@@ -1,10 +1,7 @@
 from pathlib import Path
 from typing import List
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 from app.paths import BASE_DIR
-
 
 class Settings(BaseSettings):
     max_upload_mb: int = 10
@@ -14,7 +11,8 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",
-        env_file_encoding="utf-8"
+        env_file_encoding="utf-8",
+        env_list=["allowed_origins"],  # Add this to split comma-separated env variable
     )
 
 settings = Settings()
