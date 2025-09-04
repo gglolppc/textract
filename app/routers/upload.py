@@ -1,3 +1,4 @@
+import traceback
 from io import BytesIO
 from PIL import Image
 from fastapi import APIRouter, UploadFile, File, HTTPException, Request, Form
@@ -33,8 +34,8 @@ async def upload_file(
 
     try:
         img = Image.open(BytesIO(raw)).convert("RGB")
-        if not await run_in_threadpool(has_text, img):
-            raise HTTPException(400, "File has no text")
+        # if not await run_in_threadpool(has_text, img):
+        #     raise HTTPException(400, "File has no text")
 
         uid = new_id()
         scr = (UPLOAD_DIR / f"{uid}.jpg").resolve()
@@ -48,8 +49,9 @@ async def upload_file(
         return {
             "text": result
         }
-    except Exception:
-        raise HTTPException(500, "Failed to process image")
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(500, f"Failed to process image: {e}")
 
 
 
