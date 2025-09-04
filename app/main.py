@@ -21,4 +21,4 @@ app.add_middleware(
 )
 
 app.include_router(health.router, prefix="/health", tags=["health"])
-app.include_router(upload.router, prefix="/upload", tags=["upload"])
+app.include_router(upload.router, prefix="/api/ocr", tags=["upload"])

@@ -1,5 +1,3 @@
-import base64
-from pathlib import Path
 from openai import OpenAI, OpenAIError
 
 from app.config import settings
