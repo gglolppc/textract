@@ -8,7 +8,7 @@ from app.routers import upload, health
 
 
 
-app = FastAPI(title="img-to-text")
+app = FastAPI(title="textract")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
