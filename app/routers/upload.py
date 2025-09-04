@@ -44,7 +44,7 @@ async def upload_file(
         validate_image_url(link)
 
 
-        result = await run_in_threadpool(run_ocr, scr, language)
+        result = await run_in_threadpool(run_ocr, link, language)
 
         return {
             "text": result
