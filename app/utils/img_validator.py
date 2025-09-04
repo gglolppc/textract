@@ -25,11 +25,10 @@ def is_image(raw: bytes) -> bool:
 
 
 def has_text(img: Image.Image, min_chars: int = 5) -> bool:
-    # в серый формат
     gray = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2GRAY)
+    gray = cv2.convertScaleAbs(gray, alpha=1.5, beta=0)
 
-    # лёгкий threshold для выделения текста
-    _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    config = "--oem 3 --psm 6"
+    text = pytesseract.image_to_string(gray, config=config)
 
-    text = pytesseract.image_to_string(thresh)
     return len(text.strip()) >= min_chars
