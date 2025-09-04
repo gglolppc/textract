@@ -34,6 +34,7 @@ async def upload_file(
 
     try:
         img = Image.open(BytesIO(raw)).convert("RGB")
+        img.thumbnail((750, 750))
         # if not await run_in_threadpool(has_text, img):
         #     raise HTTPException(400, "File has no text")
 
