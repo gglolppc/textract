@@ -15,7 +15,7 @@ router = APIRouter()
 ALLOWED_MIME = {"image/jpeg", "image/png", "image/webp"}
 
 @limiter.limit("3/day")
-@router.post("")
+@router.post("/")
 async def upload_file(
     request: Request,
     file: UploadFile = File(...),
