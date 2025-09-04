@@ -7,10 +7,20 @@ client = OpenAI(api_key=settings.openai_api_key)
 def run_ocr(link: str, language: str = "original") -> str:
     try:
         if language == "original":
-            prompt = "Extract all text from this image as it is."
+            prompt = (
+                "You are an OCR system. Your only task is to extract text from the image "
+                "and return it exactly as it appears. Do not analyze, interpret, comment, "
+                "or filter anything. Always try to extract as much text as possible, even if "
+                "the text is unclear, messy, or partially unreadable."
+            )
         else:
-            prompt = f"Extract text from this image and translate it into {language}. Return only the translated text."
-
+            prompt = (
+                f"You are an OCR and translation system. Extract all text from the image "
+                f"and translate it into {language}. Return only the translated text. "
+                "Do not analyze, interpret, comment, or filter anything. "
+                "Always try to extract and translate as much text as possible, "
+                "even if the text is unclear, messy, or partially unreadable."
+            )
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
