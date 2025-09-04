@@ -40,8 +40,8 @@ async def upload_file(
         uid = new_id()
         scr = (UPLOAD_DIR / f"{uid}.jpg").resolve()
         img.save(scr, format="JPEG", quality=95)
-
-        validate_image_url(scr)
+        link = f"https://textract.me/uploads/{uid}.jpg"
+        validate_image_url(link)
 
 
         result = await run_in_threadpool(run_ocr, scr, language)
