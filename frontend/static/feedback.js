@@ -28,11 +28,13 @@ sendFeedback.addEventListener("click", async () => {
         return;
     }
 
+    const formData = new FormData();
+    formData.append("user_feedback", text);
+
     try {
         const res = await fetch("/feedback", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text })
+            body: formData
         });
 
         const data = await res.json();
