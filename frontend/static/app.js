@@ -56,6 +56,10 @@ processBtn.addEventListener("click", async () => {
       method: "POST",
       body: formData
     });
+    if (res.status === 429) {
+      resultBlock.innerText = "⚠️ Too many requests. Please try again later. Limit 5 requests per hour.";
+      return;
+    }
     const data = await res.json();
     resultBlock.innerText = data.text || data.translated || data.original || "No text found.";
   } catch (e) {

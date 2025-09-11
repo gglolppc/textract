@@ -18,7 +18,7 @@ from app.utils.get_ip import get_client_ip
 router = APIRouter()
 
 @router.post("/")
-@limiter.limit("3/day")
+@limiter.limit("5/hour")
 async def upload_file(
     request: Request,
     file: UploadFile = File(...),

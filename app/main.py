@@ -1,11 +1,12 @@
 from contextlib import asynccontextmanager
 
 import cv2
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse
 
 from app.core import model
 from app.utils.limiter import limiter
@@ -29,7 +30,13 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan, title="textract")
 
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Too many requests. Please try again later. Limit 5 requests per hour."}
+    )
 app.add_middleware(SlowAPIMiddleware)
 app.add_middleware(
     CORSMiddleware,
