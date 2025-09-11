@@ -58,7 +58,7 @@ processBtn.addEventListener("click", async () => {
         });
 
         if (res.status === 429) {
-            resultBlock.innerText = "⚠️ Too many requests. Please try again later.";
+            resultBlock.innerText = "⚠️ Too many requests. Please try again later. Limit 5 per hour";
             return;
         }
 
