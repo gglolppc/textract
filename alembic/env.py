@@ -4,7 +4,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from app.config import settings
-from app.db.database import Base, RequestLog  # 👈 импортируем Base и модель
+from app.db.database import Base, RequestLog, Feedback
 
 # Эта переменная нужна для автогенерации
 target_metadata = Base.metadata

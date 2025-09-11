@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession, AsyncAttrs
@@ -36,6 +35,12 @@ class RequestLog(Base):
     detected_lang: Mapped[str] = mapped_column(String(20), nullable=True)
 
     api_model: Mapped[str] = mapped_column(String(50), default="gpt-4o-mini")
+
+class Feedback(Base):
+    __tablename__ = "feedbacks"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    text: Mapped[str] = mapped_column(Text, nullable=True)
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:

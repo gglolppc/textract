@@ -9,6 +9,16 @@ const textSize = document.getElementById("textSize");
 
 const defaultBtnHTML = processBtn.innerHTML; // сохраняем изначальное содержимое кнопки
 
+const langSelect = document.getElementById("lang");
+
+languages.forEach(lang => {
+  const opt = document.createElement("option");
+  opt.value = lang.code;
+  opt.textContent = lang.name;
+  langSelect.appendChild(opt);
+});
+
+
 // слушаем выбор файла
 fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
