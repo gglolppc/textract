@@ -32,7 +32,7 @@ sendFeedback.addEventListener("click", async () => {
     formData.append("user_feedback", text);
 
     try {
-        const res = await fetch("/feedback", {
+        const res = await fetch("/feedback/", {
             method: "POST",
             body: formData
         });
