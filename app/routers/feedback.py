@@ -17,4 +17,5 @@ async def feedback(
     new_feedback = Feedback(text=user_feedback)
     session.add(new_feedback)
     await session.commit()
+    return {"message": "✅ Thank you for your feedback!"}
 
