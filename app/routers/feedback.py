@@ -7,7 +7,7 @@ from app.utils.limiter import limiter
 
 router = APIRouter()
 
-@router.post("/feedback")
+@router.post("/")
 @limiter.limit("5/hour")
 async def feedback(
         request: Request,
