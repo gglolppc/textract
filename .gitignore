@@ -25,4 +25,4 @@ dockerized_app/__pycache__/
 .idea/
 .vscode/
 
-uploads/tmp
+uploads
