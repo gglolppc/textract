@@ -1,17 +1,17 @@
+from pathlib import Path
+
 from PIL import Image
 from io import BytesIO
-import httpx
 from fastapi import HTTPException
 
 
 
-def validate_image_url(url: str):
-    try:
-        r = httpx.get(url, timeout=5)
-        if r.status_code != 200:
-            raise HTTPException(400, "Upload error: image not accessible")
-    except Exception:
-        raise HTTPException(400, "Upload error: invalid image link")
+def validate_image_file(scr: Path) -> None:
+    """
+    Проверяет, что изображение существует и доступно для чтения.
+    """
+    if not scr.exists() or not scr.is_file():
+        raise HTTPException(400, "Upload error: image not saved")
 
 ALLOWED_MIME = {"image/jpeg", "image/png", "image/webp"}
 

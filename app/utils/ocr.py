@@ -1,29 +1,27 @@
 from openai import OpenAI, OpenAIError
-
+from app.schemas.ocr_response import OCRResponse
 from app.config import settings
 
 client = OpenAI(api_key=settings.openai_api_key)
 
-def run_ocr(link: str, language: str = "original") -> str:
+
+
+def run_ocr(link: str, language: str = "original") -> tuple[OCRResponse, int]:
     try:
-        if language == "original":
-            prompt = (
-                "You are an OCR system. Your only task is to extract text from the image "
-                "and return it exactly as it appears. Do not analyze, interpret, comment, "
-                "or filter anything. Always try to extract as much text as possible, "
-                "even if the text is unclear, messy, distorted, or partially unreadable. "
-                "If something looks ambiguous, output your best guess."
-            )
-        else:
-            prompt = (
-                f"You are an OCR and translation system. Extract all text from the image "
-                f"and translate it into {language}. Return only the translated text. "
-                "If you cannot fully understand the text, still provide your best possible translation. "
-                "If many words are unclear, summarize the general meaning. "
-                "Explicitly note where the text is unreadable instead of refusing."
-            )
+        prompt = (
+            f"You are an OCR and translation system. Extract text from the image and translate it into {language}. "
+            f"Always return a valid JSON with fields: "
+            f'{{"extracted_text": "...", "translated_text": "...", "status": "...", '
+            f'"fail_reason": "...", "fail_reason_code": "...", "confidence": "...", "notes": "..."}}. '
+            f"Possible values for 'status': success, partial, fail. "
+            f"If the image contains illegal, harmful, or sensitive content that cannot be processed, "
+            f"set status='fail', extracted_text='', translated_text='', and provide fail_reason='Sensitive content, request banned' "
+            f"and fail_reason_code='sensitive_content'. "
+            f"Never refuse or explain outside of JSON, always fill the JSON strictly."
+        )
         response = client.chat.completions.create(
             model="gpt-4o-mini",
+            response_format={"type": "json_object"},  # 👈 гарантия JSON
             messages=[
                 {
                     "role": "user",
@@ -36,11 +34,30 @@ def run_ocr(link: str, language: str = "original") -> str:
         )
 
         content = response.choices[0].message.content
-        if isinstance(content, list):
-            return "".join([c["text"] for c in content if c["type"] == "text"])
-        return str(content)
+        print(content)
 
-    except OpenAIError:
-        return "Upload error"
+        tokens = response.usage.total_tokens if response.usage else 0
 
+        try:
+            return OCRResponse.model_validate_json(content), tokens
+        except Exception:
+            return OCRResponse(
+                extracted_text="",
+                translated_text="",
+                status="fail",
+                fail_reason="Invalid JSON format from model",
+                fail_reason_code="bad_format",
+                confidence="none",
+                notes="",
+            ), tokens
 
+    except OpenAIError as e:
+        return OCRResponse(
+            extracted_text="",
+            translated_text="",
+            status="fail",
+            fail_reason=f"OpenAI API error: {str(e)}",
+            fail_reason_code="openai_error",
+            confidence="none",
+            notes="",
+        ), 0
