@@ -11,30 +11,30 @@ const defaultBtnHTML = processBtn.innerHTML; // сохраняем изнача�
 
 // слушаем выбор файла
 fileInput.addEventListener("change", () => {
-  const file = fileInput.files[0];
-  if (file) {
-    fileName.innerText = "Selected: " + file.name;
-    const reader = new FileReader();
-    reader.onload = e => {
-      previewImg.src = e.target.result;
-      previewContainer.classList.remove("hidden");
-    };
-    reader.readAsDataURL(file);
-  } else {
-    fileName.innerText = "No file selected";
-    previewContainer.classList.add("hidden");
-  }
+    const file = fileInput.files[0];
+    if (file) {
+        fileName.innerText = "Selected: " + file.name;
+        const reader = new FileReader();
+        reader.onload = e => {
+            previewImg.src = e.target.result;
+            previewContainer.classList.remove("hidden");
+        };
+        reader.readAsDataURL(file);
+    } else {
+        fileName.innerText = "No file selected";
+        previewContainer.classList.add("hidden");
+    }
 });
 
 // обработка кнопки
 processBtn.addEventListener("click", async () => {
-  if (!fileInput.files[0]) {
-    resultBlock.innerText = "Please choose a file first.";
-    return;
-  }
+    if (!fileInput.files[0]) {
+        resultBlock.innerText = "Please choose a file first.";
+        return;
+    }
 
-  // состояние загрузки (иконка-шестерёнка + текст Extracting...)
-  processBtn.innerHTML = `
+    // состояние загрузки (иконка-шестерёнка + текст Extracting...)
+    processBtn.innerHTML = `
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
          stroke-width="1.5" stroke="currentColor"
          class="w-5 h-5 mr-2 animate-spin">
@@ -45,38 +45,42 @@ processBtn.addEventListener("click", async () => {
     </svg>
     Extracting...
   `;
-  processBtn.classList.add("extracting");
+    processBtn.classList.add("extracting");
 
-  const formData = new FormData();
-  formData.append("file", fileInput.files[0]);
-  formData.append("language", document.getElementById("lang").value);
+    const formData = new FormData();
+    formData.append("file", fileInput.files[0]);
+    formData.append("language", document.getElementById("lang").value);
 
-  try {
-    const res = await fetch("/upload/", {
-      method: "POST",
-      body: formData
-    });
-    if (res.status === 429) {
-      resultBlock.innerText = "⚠️ Too many requests. Please try again later. Limit 5 requests per hour.";
-      return;
+    try {
+        const res = await fetch("/upload/", {
+            method: "POST",
+            body: formData
+        });
+
+        if (res.status === 429) {
+            resultBlock.innerText = "⚠️ Too many requests. Please try again later.";
+            return;
+        }
+
+        const data = await res.json();
+        resultBlock.innerText =
+            data.text || data.translated || data.original || "No text found.";
+    } catch (e) {
+        resultBlock.innerText = "Error: " + e;
+    } finally {
+        // вернуть кнопку в исходное состояние
+        processBtn.innerHTML = defaultBtnHTML;
+        processBtn.classList.remove("extracting");
     }
-    const data = await res.json();
-    resultBlock.innerText = data.text || data.translated || data.original || "No text found.";
-  } catch (e) {
-    resultBlock.innerText = "Error: " + e;
-  }
 
-  // вернуть кнопку в исходное состояние
-  processBtn.innerHTML = defaultBtnHTML;
-  processBtn.classList.remove("extracting");
 });
 
 // копирование результата
 copyBtn.addEventListener("click", () => {
-  navigator.clipboard.writeText(resultBlock.innerText);
+    navigator.clipboard.writeText(resultBlock.innerText);
 });
 
 // смена размера текста
 textSize.addEventListener("change", () => {
-  resultBlock.className = `flex-1 overflow-y-auto border rounded-md p-3 bg-white ${textSize.value}`;
+    resultBlock.className = `flex-1 overflow-y-auto border rounded-md p-3 bg-white ${textSize.value}`;
 });
