@@ -31,11 +31,21 @@ sendFeedback.addEventListener("click", async () => {
     const formData = new FormData();
     formData.append("user_feedback", text);
 
-    try {
+      try {
         const res = await fetch("/feedback/", {
             method: "POST",
             body: formData
         });
+
+        if (res.status === 429) {
+            feedbackResult.innerText = "⚠️ Too many requests. Please try again later.";
+            return;
+        }
+
+        if (!res.ok) {
+            feedbackResult.innerText = `❌ Error: ${res.status}`;
+            return;
+        }
 
         const data = await res.json();
         feedbackResult.innerText = data.message || "✅ Thank you for your feedback!";
@@ -43,4 +53,4 @@ sendFeedback.addEventListener("click", async () => {
     } catch (e) {
         feedbackResult.innerText = "❌ Error sending feedback.";
     }
-});
+);
