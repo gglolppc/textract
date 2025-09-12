@@ -31,7 +31,7 @@ sendFeedback.addEventListener("click", async () => {
     const formData = new FormData();
     formData.append("user_feedback", text);
 
-      try {
+    try {
         const res = await fetch("/feedback/", {
             method: "POST",
             body: formData
@@ -53,4 +53,4 @@ sendFeedback.addEventListener("click", async () => {
     } catch (e) {
         feedbackResult.innerText = "❌ Error sending feedback.";
     }
-);
+});
