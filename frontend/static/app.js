@@ -7,6 +7,46 @@ const resultBlock = document.getElementById("resultBlock");
 const copyBtn = document.getElementById("copyBtn");
 const textSize = document.getElementById("textSize");
 
+async function handleLogout(e) {
+  e.preventDefault();
+  try {
+    const res = await fetch("/logout", {
+      method: "GET",
+      credentials: "include" // важно, иначе кука не отправится
+    });
+    if (res.redirected) {
+      window.location.href = res.url; // редиректим на /
+    } else {
+      window.location.href = "/";
+    }
+  } catch (err) {
+    console.error("Logout failed:", err);
+  }
+}
+
+
+async function checkAuth() {
+  try {
+    const res = await fetch("/me");
+
+    if (!res.ok) {
+      document.getElementById("auth-buttons").innerHTML =
+        `<a href="/auth/register" class="hover:underline">Login</a>`;
+      return;
+    }
+
+    const user = await res.json();
+    document.getElementById("auth-buttons").innerHTML =
+      `Logged in as <span class="font-semibold">${user.email}</span>
+       <a href="#" onclick="handleLogout(event)" class="ml-3 text-red-400 hover:underline">Logout</a>`;
+  } catch (err) {
+    document.getElementById("auth-buttons").innerHTML =
+      `<a href="/auth/register" class="hover:underline">Login</a>`;
+  }
+}
+
+checkAuth();
+
 const defaultBtnHTML = processBtn.innerHTML; // сохраняем изначальное содержимое кнопки
 
 const langSelect = document.getElementById("lang");

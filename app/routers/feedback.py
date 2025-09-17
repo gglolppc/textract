@@ -3,7 +3,7 @@ from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_session, Feedback
-from app.utils.limiter import limiter
+from app.utils.security.limiter import limiter
 
 router = APIRouter()
 

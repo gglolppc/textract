@@ -12,6 +12,12 @@ class Settings(BaseSettings):
     local_test_image: Optional[str] = None
     database_url: str
     database_alembic_url: str
+    jwt_secret: str
+    jwt_algorithm: str
+    smtp_user: str
+    smtp_password: str
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 587
 
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",

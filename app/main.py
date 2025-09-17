@@ -2,16 +2,15 @@ from contextlib import asynccontextmanager
 
 import cv2
 from fastapi import FastAPI, Request
-from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
 from app.core import model
-from app.utils.limiter import limiter
+from app.utils.security.limiter import limiter
 from app.config import settings
-from app.routers import upload, health, feedback
+from app.routers import upload, health, feedback, auth
 
 
 @asynccontextmanager
@@ -49,4 +48,5 @@ app.add_middleware(
 app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(upload.router, prefix="/upload", tags=["upload"])
 app.include_router(feedback.router, prefix="/feedback", tags=["feedback"])
+app.include_router(auth.router)
 

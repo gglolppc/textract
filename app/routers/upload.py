@@ -4,16 +4,16 @@ from io import BytesIO
 from PIL import Image
 from fastapi import APIRouter, UploadFile, File, HTTPException, Request, Form, Depends
 from starlette.concurrency import run_in_threadpool
-from app.utils.text_validator import has_text
-from app.utils.ids import new_id
+from app.utils.img_utils.text_validator import has_text
+from app.utils.security.ids import new_id
 from app.config import settings
 from app.paths import UPLOAD_DIR
-from app.utils.img_validator import is_image, validate_image_file
-from app.utils.ocr import run_ocr
-from app.utils.limiter import limiter
+from app.utils.img_utils.img_validator import is_image, validate_image_file
+from app.utils.img_utils.ocr import run_ocr
+from app.utils.security.limiter import limiter
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_session, RequestLog
-from app.utils.get_ip import get_client_ip
+from app.utils.security.get_ip import get_client_ip
 
 router = APIRouter()
 

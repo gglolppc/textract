@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register — textract.me</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #fff; color: #000; }
+    .logo { font-family: 'Orbitron', sans-serif; }
+  </style>
+</head>
+<body class="flex flex-col items-center min-h-screen">
+
+  <!-- TOP BAR -->
+  <div class="w-full bg-gradient-to-r from-purple-900 via-gray-800 to-black text-white text-xs md:text-sm">
+    <div class="max-w-6xl mx-auto flex justify-end items-center px-3 py-2">
+      <a href="/" class="hover:underline">Home</a>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="w-full max-w-6xl relative flex items-center justify-center py-4 mb-6 border-b border-gray-200">
+    <h1 class="logo text-3xl font-bold bg-gradient-to-r from-purple-700 via-gray-800 to-black bg-clip-text text-transparent">
+      textract.me
+    </h1>
+    <button id="feedbackBtn" class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 text-sm rounded-lg text-white font-medium bg-gradient-to-r from-purple-900 via-gray-800 to-black hover:opacity-90 transition">
+      feedback us
+    </button>
+  </header>
+
+  <!-- CENTER FORM -->
+  <main class="flex-1 flex items-center justify-center w-full px-4">
+    <div class="w-full max-w-md bg-gray-50 p-8 rounded-2xl shadow-lg">
+      <h2 class="text-2xl font-semibold text-center mb-6">Register</h2>
+      <form action="/auth/register" method="post" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Enter your email, and we’ll send you a verification code</label>
+          <input type="email" name="email" required
+                 class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-purple-500" />
+        </div>
+        <button type="submit"
+                class="w-full py-2 rounded-lg text-white font-medium bg-gradient-to-r from-purple-900 via-gray-800 to-black hover:opacity-90 transition">
+          Register
+        </button>
+      </form>
+    </div>
+  </main>
+
+</body>
+</html>
