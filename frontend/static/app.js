@@ -10,7 +10,7 @@ const textSize = document.getElementById("textSize");
 async function handleLogout(e) {
   e.preventDefault();
   try {
-    const res = await fetch("/logout", {
+    const res = await fetch("/auth/logout", {
       method: "GET",
       credentials: "include" // важно, иначе кука не отправится
     });
@@ -41,7 +41,7 @@ async function checkAuth() {
        <a href="#" onclick="handleLogout(event)" class="ml-3 text-red-400 hover:underline">Logout</a>`;
   } catch (err) {
     document.getElementById("auth-buttons").innerHTML =
-      `<a href="/auth/register" class="hover:underline">Login</a>`;
+      `<a href="/auth/register" class="hover:underline">Sign in</a>`;
   }
 }
 

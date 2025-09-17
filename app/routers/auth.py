@@ -28,26 +28,33 @@ async def register_user(
 
     # проверяем дубликаты
     existing = await session.scalar(select(User).where(User.email == user_in.email))
-    if existing:
-        raise HTTPException(400, "Email already registered")
+    # if existing:
+    #     raise HTTPException(400, "Email already registered")
 
     # создаём OTP
     otp_code, otp_expires = generate_otp()
     hashed_otp, salt = hash_code(otp_code)
-
-    new_user = User(
-        email=user_in.email,
-        otp_code=hashed_otp,
-        otp_salt=salt,
-        otp_expires=otp_expires,
-    )
-    session.add(new_user)
+    if not existing:
+        user = User(
+            email=user_in.email,
+            otp_code=hashed_otp,
+            otp_salt=salt,
+            otp_expires=otp_expires,
+        )
+        session.add(user)
+    else:
+        user = existing
+        user.is_active = False
+        user.otp_code = hashed_otp
+        user.otp_salt = salt
+        user.otp_expires = otp_expires
+        user.updated_at = datetime.now(timezone.utc)
     await session.commit()
-    await session.refresh(new_user)
-    await send_mail(new_user.email, "textract OTC confirmation code", otp_code)
+    await session.refresh(user)
+    await send_mail(user.email, "textract OTC confirmation code", otp_code)
 
     # редиректим на confirm с user_id
-    return RedirectResponse(url=f"/auth/confirm?user_id={new_user.id}", status_code=303)
+    return RedirectResponse(url=f"/auth/confirm?user_id={user.id}", status_code=303)
 
 
 # Шаг 2. Страница подтверждения
