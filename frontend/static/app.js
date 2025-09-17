@@ -31,7 +31,7 @@ async function checkAuth() {
 
     if (!res.ok) {
       document.getElementById("auth-buttons").innerHTML =
-        `<a href="/auth/register" class="hover:underline">Login</a>`;
+        `<a href="/auth/register" class="hover:underline">Sign in</a>`;
       return;
     }
 
@@ -41,7 +41,7 @@ async function checkAuth() {
        <a href="#" onclick="handleLogout(event)" class="ml-3 text-red-400 hover:underline">Logout</a>`;
   } catch (err) {
     document.getElementById("auth-buttons").innerHTML =
-      `<a href="/auth/register" class="hover:underline">Sign up</a>`;
+      `<a href="/auth/register" class="hover:underline">Sign in</a>`;
   }
 }
 
