@@ -27,7 +27,7 @@ async function handleLogout(e) {
 
 async function checkAuth() {
   try {
-    const res = await fetch("/me");
+    const res = await fetch("/auth/me");
 
     if (!res.ok) {
       document.getElementById("auth-buttons").innerHTML =
