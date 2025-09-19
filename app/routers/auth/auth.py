@@ -57,6 +57,7 @@ async def register_user(
     # редиректим на confirm с user_id
     return RedirectResponse(url=f"/auth/confirm?user_id={user.id}", status_code=303)
 
+@router.post("/resend_otp")
 
 # Шаг 2. Страница подтверждения
 @router.get("/confirm", response_class=HTMLResponse, dependencies=[Depends(guest_only)])
@@ -112,6 +113,8 @@ async def confirm_user(
         samesite="lax"
     )
     return response
+
+
 
 
 @router.get("/me")

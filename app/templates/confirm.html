@@ -1,47 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Confirm — textract.me</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: 'Poppins', sans-serif; background: #fff; color: #000; }
-    .logo { font-family: 'Orbitron', sans-serif; }
-  </style>
-</head>
-<body class="flex flex-col items-center min-h-screen">
+<!-- CENTER FORM -->
+<main class="flex-1 flex items-center justify-center w-full px-4">
+  <div class="w-full max-w-md bg-gray-50 p-8 rounded-2xl shadow-lg">
+    <h2 class="text-2xl font-semibold text-center mb-6">Enter confirmation code</h2>
 
-  <!-- TOP BAR -->
-  <div class="w-full bg-gradient-to-r from-purple-900 via-gray-800 to-black text-white text-xs md:text-sm">
-    <div class="max-w-6xl mx-auto flex justify-end items-center px-3 py-2">
-      <a href="/" class="hover:underline">Home</a>
-    </div>
-  </div>
-
-  <!-- HEADER -->
-  <header class="w-full max-w-6xl relative flex items-center justify-center py-4 mb-6 border-b border-gray-200">
-    <h1 class="logo text-3xl font-bold bg-gradient-to-r from-purple-700 via-gray-800 to-black bg-clip-text text-transparent">
-      textract.me
-    </h1>
-    <button id="feedbackBtn" class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 text-sm rounded-lg text-white font-medium bg-gradient-to-r from-purple-900 via-gray-800 to-black hover:opacity-90 transition">
-      feedback us
-    </button>
-  </header>
-
-  <!-- CENTER FORM -->
-  <main class="flex-1 flex items-center justify-center w-full px-4">
-    <div class="w-full max-w-md bg-gray-50 p-8 rounded-2xl shadow-lg">
-      <h2 class="text-2xl font-semibold text-center mb-6">Enter confirmation code</h2>
-      {% if error %}
+    {% if error %}
+      {% if error == "OTP expired" %}
+        <p class="text-center text-red-500 mb-4">
+          Your confirmation code has expired. Please sign up again.
+        </p>
+      {% else %}
         <p class="text-center text-red-500 mb-4">{{ error }}</p>
       {% endif %}
+    {% endif %}
+
+    {% if error == "OTP expired" %}
+      <!-- Кнопка регистрации заново -->
+      <a href="/auth/register"
+         class="block w-full text-center py-2 rounded-lg text-white font-medium bg-gradient-to-r from-purple-900 via-gray-800 to-black hover:opacity-90 transition">
+        Sign up again
+      </a>
+    {% else %}
+      <!-- Форма подтверждения -->
       <form action="/auth/confirm" method="post" class="space-y-4">
         <input type="hidden" name="user_id" value="{{ user_id }}" />
         <div>
-          <label class="block text-sm font-medium mb-1">Verification code sent. Check your email.</label>
+          <label class="block text-sm font-medium mb-1">
+            Verification code sent. Check your email.
+          </label>
           <input type="text" name="otp_code" required
                  class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-purple-500" />
         </div>
@@ -50,8 +35,6 @@
           Confirm
         </button>
       </form>
-    </div>
-  </main>
-
-</body>
-</html>
+    {% endif %}
+  </div>
+</main>
