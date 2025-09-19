@@ -10,7 +10,8 @@ from starlette.responses import JSONResponse
 from app.core import model
 from app.utils.security.limiter import limiter
 from app.config import settings
-from app.routers import upload, health, feedback, auth
+from app.routers import upload, health, feedback
+from app.routers.auth import auth
 
 
 @asynccontextmanager
@@ -49,4 +50,3 @@ app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(upload.router, prefix="/upload", tags=["upload"])
 app.include_router(feedback.router, prefix="/feedback", tags=["feedback"])
 app.include_router(auth.router)
-

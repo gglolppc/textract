@@ -6,15 +6,16 @@ from sqlalchemy import select
 from starlette.templating import Jinja2Templates
 
 from app.db.database import User, get_session
+from app.routers.auth.dependencies import guest_only, require_current_user
 from app.utils.security.otp_generator import generate_otp, hash_code, verify_otp
 from app.schemas.user_create import UserCreate
-from app.utils.security.jwt_handler import create_access_token, verify_access_token
+from app.utils.security.jwt_handler import create_access_token
 from app.utils.security.send_mail import send_mail
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 templates = Jinja2Templates(directory="app/templates")
 
-@router.get("/register")
+@router.get("/register", dependencies=[Depends(guest_only)])
 async def register_page(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
@@ -58,7 +59,7 @@ async def register_user(
 
 
 # Шаг 2. Страница подтверждения
-@router.get("/confirm", response_class=HTMLResponse)
+@router.get("/confirm", response_class=HTMLResponse, dependencies=[Depends(guest_only)])
 async def confirm_page(request: Request, user_id: int):
     # простая HTML форма
     return templates.TemplateResponse(
@@ -114,24 +115,7 @@ async def confirm_user(
 
 
 @router.get("/me")
-async def get_me(request: Request, session: AsyncSession = Depends(get_session)):
-    token = request.cookies.get("access_token")
-    if not token:
-        raise HTTPException(401, "Not authenticated")
-
-    payload = verify_access_token(token)
-    if not payload:
-        raise HTTPException(401, "Invalid token")
-
-    try:
-        user = await session.get(User, int(payload["sub"]))
-    except Exception:
-        # например, если БД упала
-        raise HTTPException(500, "Database error")
-
-    if not user:
-        raise HTTPException(404, "User not found")
-
+async def get_me(user: User = Depends(require_current_user)):
     return {"id": user.id, "email": user.email}
 
 @router.get("/logout")
