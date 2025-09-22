@@ -54,7 +54,7 @@
     {% else %}
       <!-- Форма подтверждения -->
       <form action="/auth/confirm" method="post" class="space-y-4">
-        <input type="hidden" name="user_id" value="{{ user_id }}" />
+        <input type="hidden" name="token" value="{{ token }}" />
         <div>
           <label class="block text-sm font-medium mb-1">
             Verification code sent. Check your email.

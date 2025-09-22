@@ -7,6 +7,7 @@ from starlette.templating import Jinja2Templates
 
 from app.db.database import User, get_session
 from app.routers.auth.dependencies import guest_only, require_current_user
+from app.utils.security.ids import new_id
 from app.utils.security.otp_generator import generate_otp, hash_code, verify_otp
 from app.schemas.user_create import UserCreate
 from app.utils.security.jwt_handler import create_access_token
@@ -29,18 +30,18 @@ async def register_user(
 
     # проверяем дубликаты
     existing = await session.scalar(select(User).where(User.email == user_in.email))
-    # if existing:
-    #     raise HTTPException(400, "Email already registered")
 
     # создаём OTP
     otp_code, otp_expires = generate_otp()
     hashed_otp, salt = hash_code(otp_code)
+    uuid_token = new_id()
     if not existing:
         user = User(
             email=user_in.email,
             otp_code=hashed_otp,
             otp_salt=salt,
             otp_expires=otp_expires,
+            uuid_token=uuid_token,
         )
         session.add(user)
     else:
@@ -49,55 +50,60 @@ async def register_user(
         user.otp_code = hashed_otp
         user.otp_salt = salt
         user.otp_expires = otp_expires
+        user.uuid_token = uuid_token
         user.updated_at = datetime.now(timezone.utc)
     await session.commit()
     await session.refresh(user)
-    await send_mail(user.email, "textract OTC confirmation code", otp_code)
+    await send_mail(user.email, "textract OTP confirmation code", otp_code)
 
     # редиректим на confirm с user_id
-    return RedirectResponse(url=f"/auth/confirm?user_id={user.id}", status_code=303)
-
-@router.post("/resend_otp")
+    return RedirectResponse(url=f"/auth/confirm?token={uuid_token}", status_code=303)
 
 # Шаг 2. Страница подтверждения
 @router.get("/confirm", response_class=HTMLResponse, dependencies=[Depends(guest_only)])
-async def confirm_page(request: Request, user_id: int):
+async def confirm_page(request: Request,
+                       token: str,
+                       session: AsyncSession = Depends(get_session)):
+    user = await session.scalar(select(User).where(User.uuid_token == token))
+    if not user:
+        raise HTTPException(404, "Invalid link")
     # простая HTML форма
     return templates.TemplateResponse(
-        "confirm.html", {"request": request, "user_id": user_id}
+        "confirm.html", {"request": request, "token": token}
     )
 
 
 @router.post("/confirm", response_class=HTMLResponse)
 async def confirm_user(
     request: Request,
-    user_id: int = Form(...),
+    token: str = Form(...),
     otp_code: str = Form(...),
     session: AsyncSession = Depends(get_session),
 ):
-    user = await session.get(User, user_id)
+    user = await session.scalar(select(User).where(User.uuid_token == token))
     if not user:
         return templates.TemplateResponse(
             "confirm.html",
-            {"request": request, "user_id": user_id, "error": "User not found"},
+            {"request": request, "token": token, "error": "User not found"},
             status_code=404
         )
 
     if datetime.now(timezone.utc) > user.otp_expires:
         return templates.TemplateResponse(
             "confirm.html",
-            {"request": request, "user_id": user_id, "error": "OTP expired"},
+            {"request": request, "token": token, "error": "OTP expired"},
             status_code=400
         )
 
     if not verify_otp(user.otp_code, user.otp_salt, otp_code):
         return templates.TemplateResponse(
             "confirm.html",
-            {"request": request, "user_id": user_id, "error": "Invalid code"},
+            {"request": request, "token": token, "error": "Invalid code"},
             status_code=400
         )
 
     user.is_active = True
+    user.uuid_token = ""
     await session.commit()
 
     # 1. создаём JWT

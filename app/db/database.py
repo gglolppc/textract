@@ -30,6 +30,7 @@ class User(Base):
     otp_code: Mapped[Optional[str]] = mapped_column(String, nullable=True)   # одноразовый код (или hash)
     otp_salt: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     otp_expires: Mapped[Optional[datetime]] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
+    uuid_token : Mapped[str] = mapped_column(String, nullable=True)
 
     # Лимиты и подписки
     tokens: Mapped[int] = mapped_column(Integer, default=5)
