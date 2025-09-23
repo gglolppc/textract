@@ -37,7 +37,7 @@ async function checkAuth() {
 
     const user = await res.json();
     document.getElementById("auth-buttons").innerHTML =
-      `Logged in as <span class="font-semibold">${user.email}</span>
+      `Logged in as <span class="font-semibold">${user.email}, Tokens: ${user.tokens}</span>
        <a href="#" onclick="handleLogout(event)" class="ml-3 text-red-400 hover:underline">Logout</a>`;
   } catch (err) {
     document.getElementById("auth-buttons").innerHTML =

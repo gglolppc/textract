@@ -125,7 +125,7 @@ async def confirm_user(
 
 @router.get("/me")
 async def get_me(user: User = Depends(require_current_user)):
-    return {"id": user.id, "email": user.email}
+    return {"id": user.id, "email": user.email, "tokens": user.tokens}
 
 @router.get("/logout")
 async def logout():
