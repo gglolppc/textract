@@ -4,34 +4,40 @@ from io import BytesIO
 from PIL import Image
 from fastapi import APIRouter, UploadFile, File, HTTPException, Request, Form, Depends
 from starlette.concurrency import run_in_threadpool
+
+from app.config.plans import check_and_increment_usage
+from app.routers.auth.dependencies import get_current_user_or_none
 from app.utils.img_utils.text_validator import has_text
 from app.utils.security.ids import new_id
-from app.config import settings
+from app.config.config import settings
 from app.paths import UPLOAD_DIR
 from app.utils.img_utils.img_validator import is_image, validate_image_file
 from app.utils.img_utils.ocr import run_ocr
-from app.utils.security.limiter import limiter
+from app.utils.security.limiter import limiter, exempt_authenticated
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.database import get_session, RequestLog
+from app.db.database import get_session, RequestLog, User
 from app.utils.security.get_ip import get_client_ip
 
 router = APIRouter()
 
 @router.post("/")
-@limiter.limit("5/hour")
+@limiter.limit("5/hour", exempt_when=exempt_authenticated)
 async def upload_file(
     request: Request,
     file: UploadFile = File(...),
     language: str = Form("original"),
     session: AsyncSession = Depends(get_session),
+    user: User | None = Depends(get_current_user_or_none)
 ):
     start_time = time.perf_counter()
     log_entry = RequestLog(
-        from_user="guest",
         ip_address=get_client_ip(request),
+        user_id=user.id if user else None,
         status="pending"
     )
     session.add(log_entry)
+    if user:
+        check_and_increment_usage(user)
     await session.flush()
 
     max_bytes = settings.max_upload_mb * 1024 * 1024

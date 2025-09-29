@@ -1,7 +1,7 @@
 import smtplib
 import asyncio
 from email.message import EmailMessage
-from app.config import settings
+from app.config.config import settings
 
 async def send_mail(send_to: str, subject: str, message: str):
     def _send():

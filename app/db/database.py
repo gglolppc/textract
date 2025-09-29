@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import AsyncGenerator, Optional
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession, AsyncAttrs
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import DateTime, func, Integer, String, Text, Boolean
-from app.config import settings
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy import DateTime, func, Integer, String, Text, Boolean, ForeignKey
+from app.config.config import settings
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 DB_URL = settings.database_url
@@ -33,9 +33,12 @@ class User(Base):
     uuid_token : Mapped[str] = mapped_column(String, nullable=True)
 
     # Лимиты и подписки
-    tokens: Mapped[int] = mapped_column(Integer, default=5)
-    subscription: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # free / basic / pro / unlimited
+    subscription: Mapped[Optional[str]] = mapped_column(String, nullable=True)  # free / premium_monthly / premium_yearly
     sub_expires: Mapped[Optional[datetime]] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
+
+    # Учёт использования
+    usage_count: Mapped[int] = mapped_column(Integer, default=0, nullable=True)  # сколько запросов сделал
+    usage_reset_at: Mapped[Optional[datetime]] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
 
     # Метаданные
     created_at: Mapped[datetime] = mapped_column(
@@ -51,11 +54,17 @@ class User(Base):
     )
     last_login_at: Mapped[Optional[datetime]] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
 
+    requests: Mapped[list["RequestLog"]] = relationship(
+        "RequestLog", back_populates="user", cascade="all, delete-orphan"
+    )
+
 class RequestLog(Base):
     __tablename__ = "requests"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    from_user: Mapped[str] = mapped_column(String(50), default="guest")  # потом можно заменить на user_id
+    user_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
     ip_address: Mapped[str] = mapped_column(String(50), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
@@ -73,6 +82,8 @@ class RequestLog(Base):
     detected_lang: Mapped[str] = mapped_column(String(20), nullable=True)
 
     api_model: Mapped[str] = mapped_column(String(50), default="gpt-4o-mini")
+
+    user: Mapped["User"] = relationship("User", back_populates="requests")
 
 class Feedback(Base):
     __tablename__ = "feedbacks"

@@ -1,6 +1,6 @@
 from openai import OpenAI, OpenAIError
 from app.schemas.ocr_response import OCRResponse
-from app.config import settings
+from app.config.config import settings
 
 client = OpenAI(api_key=settings.openai_api_key)
 

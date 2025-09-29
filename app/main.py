@@ -4,13 +4,14 @@ import cv2
 from fastapi import FastAPI, Request
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
+from sqlalchemy.sql.functions import user
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
 from app.core import model
 from app.utils.security.limiter import limiter
-from app.config import settings
-from app.routers import upload, health, feedback
+from app.config.config import settings
+from app.routers import upload, health, feedback, billing, account
 from app.routers.auth import auth
 
 
@@ -50,3 +51,4 @@ app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(upload.router, prefix="/upload", tags=["upload"])
 app.include_router(feedback.router, prefix="/feedback", tags=["feedback"])
 app.include_router(auth.router)
+app.include_router(billing.router)

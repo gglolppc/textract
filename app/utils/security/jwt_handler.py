@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
-from app.config import settings
+from app.config.config import settings
 
 def create_access_token(data: dict, days: int = 365) -> str:
     expire = datetime.now(timezone.utc) + timedelta(days=days)
