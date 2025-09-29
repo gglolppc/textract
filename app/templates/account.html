@@ -43,11 +43,11 @@
       <h2 class="text-xl font-semibold mb-4">Account details</h2>
 
       <p><span class="font-medium">E-mail:</span> {{ user.email }}</p>
-      <p><span class="font-medium">Subscription:</span> {{ user.subscription }}</p>
+      <p><span class="font-bold text-purple-600">Subscription:</span> {{ user.subscription }}</p>
       <p><span class="font-medium">Expires:</span> {{ user.expires }}</p>
       <p>
         <span class="font-medium">Requests:</span>
-        {{ user.requests }} / {{ plan_limit }}
+        {{ user.requests }} / {{ plan_limit["limit"] }}
       </p>
       <p><span class="font-medium">Created at:</span> {{ user.created_at }}</p>
 

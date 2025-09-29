@@ -5,6 +5,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import DateTime, func, Integer, String, Text, Boolean, ForeignKey
 from app.config.config import settings
 from sqlalchemy.dialects.postgresql import TIMESTAMP
+from sqlalchemy.sql import text
 
 DB_URL = settings.database_url
 
@@ -43,13 +44,13 @@ class User(Base):
     # Метаданные
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
-        server_default=func.now(),
+        server_default=text("NOW()"),  # гарантированно сработает в Postgres
         nullable=True
     )
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
+        server_default=text("NOW()"),  # дефолт при создании
+        onupdate=func.now(),  # при UPDATE обновляется Python-уровнем
         nullable=True
     )
     last_login_at: Mapped[Optional[datetime]] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
