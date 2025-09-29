@@ -8,10 +8,29 @@ from app.config.plans import PLAN_LIMITS
 templates = Jinja2Templates(directory="app/templates")
 router = APIRouter(prefix="/account", tags=["account"])
 
-@router.get("/")
-async def account_page(request: Request, user: User = Depends(get_current_user_or_none)):
+@router.get("/", response_class=HTMLResponse)
+async def account_page(
+    request: Request,
+    user: User = Depends(get_current_user_or_none)
+):
     if not user:
         response = RedirectResponse("/auth/register", status_code=303)
         response.delete_cookie("access_token")
         return response
-    return templates.TemplateResponse("account.html", {"request": request, "user": user, "limits" : PLAN_LIMITS})
+
+    # Сразу вытаскиваем все нужные атрибуты
+    user_data = {
+        "id": user.id,
+        "email": user.email,
+        "requests": user.requests,
+        "subscription": user.subscription,
+    }
+
+    return templates.TemplateResponse(
+        "account.html",
+        {
+            "request": request,
+            "user": user_data,   # <-- передаём dict, а не ORM
+            "limits": PLAN_LIMITS,
+        },
+    )
