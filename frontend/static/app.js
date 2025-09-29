@@ -37,8 +37,7 @@ async function checkAuth() {
 
     const user = await res.json();
     document.getElementById("auth-buttons").innerHTML =
-  `<a href="/account" class="ml-3 text-red-400 hover:underline">Account</a>`;
-
+      `<a href="/account" class="ml-3 text-red-400 hover:underline">Account</a>
        <a href="#" onclick="handleLogout(event)" class="ml-3 text-red-400 hover:underline">Logout</a>`;
   } catch (err) {
     document.getElementById("auth-buttons").innerHTML =
