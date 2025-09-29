@@ -20,13 +20,6 @@ async def account_page(
         response.delete_cookie("access_token")
         return response
 
-    # Готовим плоские данные (строки/числа), никаких ORM-объектов
-    created_at_str = (
-        user.created_at.strftime("%Y-%m-%d") if getattr(user, "created_at", None) else "—"
-    )
-    expires_str = (
-        user.expires.strftime("%Y-%m-%d") if getattr(user, "expires", None) else "—"
-    )
     plan = user.subscription or "free"
     plan_limit = PLAN_LIMITS.get(plan, 0)
 
@@ -34,9 +27,13 @@ async def account_page(
         "id": user.id,
         "email": user.email,
         "subscription": plan,
-        "requests": int(user.requests or 0),
-        "created_at": created_at_str,
-        "expires": expires_str,
+        "requests": user.usage_count,   # <-- берём счётчик, а не relationship
+        "created_at": (
+            user.created_at.strftime("%Y-%m-%d") if user.created_at else "—"
+        ),
+        "expires": (
+            user.sub_expires.strftime("%Y-%m-%d") if user.sub_expires else "—"
+        ),
     }
 
     return templates.TemplateResponse(
@@ -44,6 +41,6 @@ async def account_page(
         {
             "request": request,
             "user": user_view,
-            "plan_limit": plan_limit,   # отдельно прокинем лимит, чтобы не лезть в мапу из шаблона
+            "plan_limit": plan_limit,
         },
     )
