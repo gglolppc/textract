@@ -42,7 +42,8 @@ async def register_user(
             otp_salt=salt,
             otp_expires=otp_expires,
             uuid_token=uuid_token,
-            subscription = "free"
+            subscription = "free",
+            usage_reset_at = None
         )
         session.add(user)
     else:
