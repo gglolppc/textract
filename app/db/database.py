@@ -39,8 +39,11 @@ class User(Base):
 
     # Учёт использования
     usage_count: Mapped[int] = mapped_column(Integer, default=0, nullable=True)  # сколько запросов сделал
-    usage_reset_at: Mapped[Optional[datetime]] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
-
+    usage_reset_at: Mapped[Optional[datetime]] = mapped_column(
+        TIMESTAMP(timezone=True),
+        server_default=text("NOW()"),  # гарантированно сработает в Postgres
+        nullable=True
+    )
     # Метаданные
     created_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True),
