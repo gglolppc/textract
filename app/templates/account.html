@@ -44,12 +44,12 @@
 
       <p><span class="font-medium">E-mail:</span> {{ user.email }}</p>
       <p><span class="font-medium">Subscription:</span> {{ user.subscription }}</p>
-      <p><span class="font-medium">Expires:</span> {{ user.expires or "—" }}</p>
+      <p><span class="font-medium">Expires:</span> {{ user.expires }}</p>
       <p>
         <span class="font-medium">Requests:</span>
-        {{ user_data.requests }} / {{ limits[user_data.subscription] }}
+        {{ user.requests }} / {{ plan_limit }}
       </p>
-      <p><span class="font-medium">Created at:</span> {{ user.created_at.strftime("%Y-%m-%d") }}</p>
+      <p><span class="font-medium">Created at:</span> {{ user.created_at }}</p>
 
       <div class="flex justify-between items-center pt-4 border-t">
         <a href="/billing"
