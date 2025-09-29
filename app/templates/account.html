@@ -47,7 +47,7 @@
       <p><span class="font-medium">Expires:</span> {{ user.expires or "—" }}</p>
       <p>
         <span class="font-medium">Requests:</span>
-        {{ user.requests }} / {{ limits[user.subscription] }}
+        {{ user_data.requests }} / {{ limits[user_data.subscription] }}
       </p>
       <p><span class="font-medium">Created at:</span> {{ user.created_at.strftime("%Y-%m-%d") }}</p>
 
