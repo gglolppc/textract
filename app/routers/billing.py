@@ -7,7 +7,7 @@ from app.routers.auth.dependencies import get_current_user_or_none
 templates = Jinja2Templates(directory="app/templates")
 router = APIRouter(prefix="/billing", tags=["billing"])
 
-@router.get("/billing", response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse)
 async def billing_page(
     request: Request,
     user: User | None = Depends(get_current_user_or_none),

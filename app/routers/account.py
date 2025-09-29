@@ -8,7 +8,7 @@ from app.config.plans import PLAN_LIMITS
 templates = Jinja2Templates(directory="app/templates")
 router = APIRouter(prefix="/account", tags=["account"])
 
-@router.get("/account")
+@router.get("/")
 async def account_page(request: Request, user: User = Depends(get_current_user_or_none)):
     if not user:
         response = RedirectResponse("/auth/register", status_code=303)
