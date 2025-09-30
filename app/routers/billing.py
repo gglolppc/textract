@@ -18,4 +18,6 @@ async def billing_page(
             "user": user,
         })
     else:
-        return templates.TemplateResponse("billing.html")
+        return templates.TemplateResponse("billing.html", {
+            "request": request
+        })
