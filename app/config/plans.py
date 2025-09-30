@@ -22,6 +22,9 @@ def check_and_increment_usage(user: User):
             user.usage_reset_at = now + relativedelta(months=1)
         elif period == "year":
             user.usage_reset_at = now + relativedelta(years=1)
+        elif period == "week":
+            user.usage_reset_at = now + relativedelta(weeks=1)
+
 
     # проверка лимита
     if limit is not None and user.usage_count >= limit:
