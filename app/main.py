@@ -7,6 +7,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from sqlalchemy.sql.functions import user
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.core import model
 from app.utils.security.limiter import limiter
@@ -29,6 +30,7 @@ async def lifespan(app: FastAPI):
     print("🛑 EAST модель выгружена")
 
 app = FastAPI(lifespan=lifespan, title="textract")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.state.limiter = limiter
 
