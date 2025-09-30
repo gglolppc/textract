@@ -22,7 +22,7 @@
     <div id="auth-buttons">
       {% if user %}
         <a href="/account" class="hover:underline">My account</a>
-        <a href="#" onclick="handleLogout(event)" class="ml-3 text-red-400 hover:underline">Logout</a>
+        <a href="#" data-action="logout" class="ml-3 text-red-400 hover:underline">Logout</a>
       {% else %}
         <a href="/auth/register" class="hover:underline">Sign in</a>
       {% endif %}
@@ -94,6 +94,6 @@
 
     </div>
   </main>
-
+  <script src="{{ url_for('static', path='js/logout.js') }}"></script>
 </body>
 </html>
