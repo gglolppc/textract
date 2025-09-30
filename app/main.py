@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from app.core import model
 from app.utils.security.limiter import limiter
 from app.config.config import settings
-from app.routers import upload, health, feedback, billing, account
+from app.routers import upload, health, feedback, billing, account, index
 from app.routers.auth import auth
 
 
@@ -31,7 +31,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan, title="textract")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
-app.mount("/frontend", StaticFiles(directory="frontend/static"), name="frontend")
 
 app.state.limiter = limiter
 
@@ -56,3 +55,4 @@ app.include_router(feedback.router, prefix="/feedback", tags=["feedback"])
 app.include_router(auth.router)
 app.include_router(billing.router)
 app.include_router(account.router)
+app.include_router(index.router)
