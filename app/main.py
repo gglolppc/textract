@@ -31,6 +31,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan, title="textract")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
+app.mount("/frontend", StaticFiles(directory="frontend/static"), name="frontend")
 
 app.state.limiter = limiter
 
