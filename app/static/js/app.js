@@ -108,7 +108,7 @@ processBtn.addEventListener("click", async () => {
         });
 
         if (res.status === 429) {
-            resultBlock.innerText = "⚠️ Too many requests. Please try again later. Limit 5 per hour";
+            resultBlock.innerText = "⚠️ Too many requests. Sign in to obtain 10 free requests.";
             return;
         }
 

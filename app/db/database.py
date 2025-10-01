@@ -1,8 +1,9 @@
+import enum
 from datetime import datetime
 from typing import AsyncGenerator, Optional
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession, AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import DateTime, func, Integer, String, Text, Boolean, ForeignKey
+from sqlalchemy import DateTime, func, Integer, String, Text, Boolean, ForeignKey, Enum
 from app.config.config import settings
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.sql import text
@@ -15,6 +16,10 @@ async_session_maker = async_sessionmaker(engine, expire_on_commit=False, class_=
 class Base(AsyncAttrs, DeclarativeBase):
     pass
 
+class RoleEnum(str, enum.Enum):
+    user = "user"
+    admin = "admin"
+
 class User(Base):
     __tablename__ = "users"
 
@@ -22,7 +27,11 @@ class User(Base):
 
     # Авторизация
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
-    role: Mapped[str] = mapped_column(String, default="user")          # user / admin
+    role: Mapped[RoleEnum] = mapped_column(
+        Enum(RoleEnum, name="role_enum", create_type=True),
+        default=RoleEnum.user,
+        nullable=False
+    )
     status: Mapped[str] = mapped_column(String, default="active")      # active / banned
     provider: Mapped[str] = mapped_column(String, default="email")     # email / google / apple
     is_active: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)

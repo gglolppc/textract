@@ -12,8 +12,9 @@ from fastapi.staticfiles import StaticFiles
 from app.core import model
 from app.utils.security.limiter import limiter
 from app.config.config import settings
-from app.routers import upload, health, feedback, billing, account, index
+from app.routers import upload, health, feedback, billing, account, index, admin
 from app.routers.auth import auth
+
 
 
 @asynccontextmanager
@@ -56,3 +57,4 @@ app.include_router(auth.router)
 app.include_router(billing.router)
 app.include_router(account.router)
 app.include_router(index.router)
+app.include_router(admin.router)
