@@ -18,26 +18,33 @@
           <thead class="bg-gray-200">
             <tr>
               <th class="px-4 py-2 text-left">ID</th>
-              <th class="px-4 py-2 text-left">User</th>
+              <th class="px-4 py-2 text-left">User ID</th>
+              <th class="px-4 py-2 text-left">IP Address</th>
               <th class="px-4 py-2 text-left">Status</th>
-              <th class="px-4 py-2 text-left">Date</th>
+              <th class="px-4 py-2 text-left">Fail Reason</th>
+              <th class="px-4 py-2 text-left">Token Used</th>
+              <th class="px-4 py-2 text-left">Latency (ms)</th>
             </tr>
           </thead>
           <tbody>
           {% for r in requests %}
             <tr class="border-b hover:bg-gray-50">
               <td class="px-4 py-2">{{ r.id }}</td>
-              <td class="px-4 py-2">{{ r.from_user }}</td>
+              <td class="px-4 py-2">{{ r.user_id }}</td>
+              <td class="px-4 py-2">{{ r.ip_address }}</td>
               <td class="px-4 py-2">{{ r.status }}</td>
-              <td class="px-4 py-2">{{ r.created_at }}</td>
+              <td class="px-4 py-2">{{ r.fail_reason or '-' }}</td>
+              <td class="px-4 py-2">{{ r.token_used }}</td>
+              <td class="px-4 py-2">{{ r.latency_ms }}</td>
             </tr>
           {% else %}
-            <tr><td colspan="4" class="px-4 py-3 text-center text-gray-400">Нет данных</td></tr>
+            <tr><td colspan="7" class="px-4 py-3 text-center text-gray-400">Нет данных</td></tr>
           {% endfor %}
           </tbody>
         </table>
       </div>
     </section>
+
 
     <!-- Feedbacks -->
     <section class="mb-10">
@@ -77,8 +84,12 @@
             <tr>
               <th class="px-4 py-2 text-left">ID</th>
               <th class="px-4 py-2 text-left">Email</th>
-              <th class="px-4 py-2 text-left">Role</th>
+              <th class="px-4 py-2 text-left">Provider</th>
+              <th class="px-4 py-2 text-left">Subscription</th>
+              <th class="px-4 py-2 text-left">Sub Expires</th>
+              <th class="px-4 py-2 text-left">Usage Count</th>
               <th class="px-4 py-2 text-left">Created</th>
+              <th class="px-4 py-2 text-left">Updated</th>
             </tr>
           </thead>
           <tbody>
@@ -86,16 +97,21 @@
             <tr class="border-b hover:bg-gray-50">
               <td class="px-4 py-2">{{ u.id }}</td>
               <td class="px-4 py-2">{{ u.email }}</td>
+              <td class="px-4 py-2">{{ u.provider }}</td>
               <td class="px-4 py-2">{{ u.subscription }}</td>
+              <td class="px-4 py-2">{{ u.sub_expires }}</td>
+              <td class="px-4 py-2">{{ u.usage_count }}</td>
               <td class="px-4 py-2">{{ u.created_at }}</td>
+              <td class="px-4 py-2">{{ u.updated_at }}</td>
             </tr>
           {% else %}
-            <tr><td colspan="4" class="px-4 py-3 text-center text-gray-400">Нет пользователей</td></tr>
+            <tr><td colspan="8" class="px-4 py-3 text-center text-gray-400">Нет пользователей</td></tr>
           {% endfor %}
           </tbody>
         </table>
       </div>
     </section>
+
   </div>
 </body>
 </html>
