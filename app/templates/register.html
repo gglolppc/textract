@@ -39,12 +39,31 @@
   <main class="flex-1 flex items-start justify-center w-full px-4 pt-20">
     <div class="w-full max-w-md bg-gray-50 p-8 rounded-2xl shadow-lg">
       <h2 class="text-2xl font-semibold text-center mb-6">Sign up</h2>
+
+      <!-- Google Sign-in Button -->
+      <a href="/auth/google"
+         class="w-full bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-medium px-4 py-2 rounded-lg shadow-sm flex items-center justify-center gap-2 transition mb-6">
+        <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-5 h-5">
+        Continue with Google
+      </a>
+
+      <!-- Divider -->
+      <div class="flex items-center my-4">
+        <div class="flex-1 border-t border-gray-300"></div>
+        <span class="px-2 text-gray-400 text-sm">or</span>
+        <div class="flex-1 border-t border-gray-300"></div>
+      </div>
+
+      <!-- Email registration form -->
       <form action="/auth/register" method="post" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium mb-1">Enter your email, and we’ll send you a verification code</label>
+          <label class="block text-sm font-medium mb-1">
+            Enter your email, and we’ll send you a verification code
+          </label>
           <input type="email" name="email" required
-                 class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-purple-500" />
+                 class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-500 focus:outline-none" />
         </div>
+
         <button type="submit"
                 class="w-full py-2 rounded-lg text-white font-medium bg-gradient-to-r from-purple-900 via-gray-800 to-black hover:opacity-90 transition">
           Register
@@ -52,6 +71,7 @@
       </form>
     </div>
   </main>
+
 
 </body>
 </html>

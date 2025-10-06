@@ -37,7 +37,7 @@ async function checkAuth() {
 
     const user = await res.json();
     document.getElementById("auth-buttons").innerHTML =
-      `<a href="/account" class="ml-3 text-red-400 hover:underline">Account</a>
+      `<a href="/account" class="hover:underline">Account</a>
        <a href="#" onclick="handleLogout(event)" class="ml-3 text-red-400 hover:underline">Logout</a>`;
   } catch (err) {
     document.getElementById("auth-buttons").innerHTML =
@@ -101,7 +101,7 @@ processBtn.addEventListener("click", async () => {
     formData.append("file", fileInput.files[0]);
     formData.append("language", document.getElementById("lang").value);
 
-    try {
+       try {
         const res = await fetch("/upload/", {
             method: "POST",
             body: formData
@@ -112,16 +112,31 @@ processBtn.addEventListener("click", async () => {
             return;
         }
 
+        if (res.status === 402) {
+            const data = await res.json().catch(() => ({}));
+            resultBlock.innerHTML =
+                `⚠️ Out of requests: <a href="/billing" class="text-blue-600 underline">Please upgrade your account</a>`;
+            return;
+        }
+
+
+        if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            resultBlock.innerText = "⚠️ Error: " + (data.detail || `Unexpected error (${res.status})`);
+            return;
+        }
+
         const data = await res.json();
         resultBlock.innerText =
             data.text || data.translated || data.original || "No text found.";
     } catch (e) {
-        resultBlock.innerText = "Error: " + e;
+        resultBlock.innerText = "⚠️ Network error: " + e;
     } finally {
         // вернуть кнопку в исходное состояние
         processBtn.innerHTML = defaultBtnHTML;
         processBtn.classList.remove("extracting");
     }
+
 
 });
 

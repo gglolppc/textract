@@ -1,5 +1,5 @@
 from datetime import timezone, datetime
-from http.client import HTTPException
+from fastapi import HTTPException
 from dateutil.relativedelta import relativedelta
 from app.db.database import User
 
@@ -28,7 +28,10 @@ def check_and_increment_usage(user: User):
 
     # проверка лимита
     if limit is not None and user.usage_count >= limit:
-        raise HTTPException(403, "Usage limit exceeded")
+        raise HTTPException(
+            status_code=402,
+            detail="Update your account to premium"
+        )
 
     # увеличиваем
     user.usage_count += 1
