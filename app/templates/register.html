@@ -1,77 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Register — textract.me</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: 'Poppins', sans-serif; background: #fff; color: #000; }
-    .logo { font-family: 'Orbitron', sans-serif; }
-  </style>
-</head>
-<body class="flex flex-col items-center p-4 md:p-6 min-h-screen">
+{% extends "base.html" %}
 
-  <!-- TOP AUTH BAR -->
-  <div class="w-full bg-gradient-to-r from-purple-900 via-gray-800 to-black text-white text-xs md:text-sm">
-    <div class="max-w-6xl mx-auto flex justify-center items-center px-3 py-2 space-x-6">
-      <a href="/" class="hover:underline">Home</a>
-      <a href="/billing" class="hover:underline">Get Premium</a>
-      <a href="/account" class="hover:underline">My account</a>
-      <a href="/auth/register" class="hover:underline">Sign in</a>
+{% block title %}Register — textract.me{% endblock %}
+{% block description %}Create your textract.me account to use AI OCR and translation tools. Register easily with your email or Google account.{% endblock %}
+{% block canonical %}https://textract.me/auth/register{% endblock %}
 
+{% block extra_head %}
+  <meta name="robots" content="noindex, nofollow">
+{% endblock %}
+
+{% block content %}
+<main class="flex-1 flex items-start justify-center w-full px-4 pt-20 pb-16">
+  <div class="w-full max-w-md bg-gray-50 p-8 rounded-2xl shadow-lg">
+    <h1 class="text-2xl font-semibold text-center mb-6">Sign up</h1>
+
+    <!-- Google Sign-in Button -->
+    <a href="/auth/google"
+       class="w-full bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-medium px-4 py-2 rounded-lg shadow-sm flex items-center justify-center gap-2 transition mb-6">
+      <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-5 h-5">
+      Continue with Google
+    </a>
+
+    <!-- Divider -->
+    <div class="flex items-center my-4">
+      <div class="flex-1 border-t border-gray-300"></div>
+      <span class="px-2 text-gray-400 text-sm">or</span>
+      <div class="flex-1 border-t border-gray-300"></div>
     </div>
-  </div>
 
-  <!-- HEADER -->
-  <header class="w-full max-w-6xl relative flex items-center justify-center py-4 mb-6 border-b border-gray-200">
-    <h1 class="logo text-3xl font-bold bg-gradient-to-r from-purple-700 via-gray-800 to-black bg-clip-text text-transparent">
-      textract.me
-    </h1>
-    <button id="feedbackBtn" class="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 text-sm rounded-lg text-white font-medium bg-gradient-to-r from-purple-900 via-gray-800 to-black hover:opacity-90 transition">
-      feedback us
-    </button>
-  </header>
-
-  <!-- CENTER FORM -->
-  <main class="flex-1 flex items-start justify-center w-full px-4 pt-20">
-    <div class="w-full max-w-md bg-gray-50 p-8 rounded-2xl shadow-lg">
-      <h2 class="text-2xl font-semibold text-center mb-6">Sign up</h2>
-
-      <!-- Google Sign-in Button -->
-      <a href="/auth/google"
-         class="w-full bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-medium px-4 py-2 rounded-lg shadow-sm flex items-center justify-center gap-2 transition mb-6">
-        <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-5 h-5">
-        Continue with Google
-      </a>
-
-      <!-- Divider -->
-      <div class="flex items-center my-4">
-        <div class="flex-1 border-t border-gray-300"></div>
-        <span class="px-2 text-gray-400 text-sm">or</span>
-        <div class="flex-1 border-t border-gray-300"></div>
+    <!-- Email registration form -->
+    <form action="/auth/register" method="post" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium mb-1 text-gray-700">
+          Enter your email and we'll send you a verification code
+        </label>
+        <input type="email" name="email" required
+               class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-500 focus:outline-none" />
       </div>
 
-      <!-- Email registration form -->
-      <form action="/auth/register" method="post" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium mb-1">
-            Enter your email, and we’ll send you a verification code
-          </label>
-          <input type="email" name="email" required
-                 class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-purple-500 focus:outline-none" />
-        </div>
+      <button type="submit"
+              class="w-full py-2 rounded-lg text-white font-medium bg-gradient-to-r from-purple-900 via-gray-800 to-black hover:opacity-90 transition">
+        Continue with e-mail...
+      </button>
+    </form>
 
-        <button type="submit"
-                class="w-full py-2 rounded-lg text-white font-medium bg-gradient-to-r from-purple-900 via-gray-800 to-black hover:opacity-90 transition">
-          Register
-        </button>
-      </form>
-    </div>
-  </main>
-
-
-</body>
-</html>
+  </div>
+</main>
+{% endblock %}

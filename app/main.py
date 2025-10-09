@@ -7,14 +7,15 @@ from slowapi.middleware import SlowAPIMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
 from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
-import os
+
 from app.core import model
 from app.utils.security.limiter import limiter
 from app.config.config import settings
-from app.routers import upload, health, feedback, billing, account, index, admin
+from app.routers import upload, health, feedback, billing, account, index, admin, pdf, pages
 from app.routers.auth import auth, google_auth
+from app.routers.pages import api_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -65,3 +66,15 @@ app.include_router(billing.router)
 app.include_router(account.router)
 app.include_router(index.router)
 app.include_router(admin.router)
+app.include_router(pdf.router)
+app.include_router(pages.router)
+app.include_router(api_router)
+
+
+@app.get("/robots.txt", include_in_schema=False)
+async def robots():
+    return FileResponse("app/static/seo/robots.txt", media_type="text/plain")
+
+@app.get("/sitemap.xml", include_in_schema=False)
+async def sitemap():
+    return FileResponse("app/static/seo/sitemap.xml", media_type="application/xml")

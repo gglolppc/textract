@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from app.db.database import User
 
 PLAN_LIMITS = {
-    "free": {"limit": 10, "period": "week"},
+    "free": {"limit": 30, "period": "week"},
     "premium_monthly": {"limit": 10000, "period": "month"},
     "premium_yearly": {"limit": None, "period": "year"},  # unlimited
 }

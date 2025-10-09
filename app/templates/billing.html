@@ -1,100 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Billing — textract.me</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: 'Poppins', sans-serif; background: #fff; color: #000; }
-    .logo { font-family: 'Orbitron', sans-serif; }
-  </style>
-</head>
-<body class="flex flex-col items-center p-4 md:p-6 min-h-screen">
+{% extends "base.html" %}
 
-<!-- TOP AUTH BAR -->
-<div class="w-full bg-gradient-to-r from-purple-900 via-gray-800 to-black text-white text-xs md:text-sm">
-  <div class="max-w-6xl mx-auto flex justify-center items-center px-3 py-2 space-x-6">
-    <a href="/" class="hover:underline">Home</a>
-    <a href="/billing" class="hover:underline">Get Premium</a>
-    <div id="auth-buttons">
-      {% if user %}
-        <a href="/account" class="hover:underline">My account</a>
-        <a href="#" data-action="logout" class="ml-3 text-red-400 hover:underline">Logout</a>
-      {% else %}
-        <a href="/auth/register" class="hover:underline">Sign in</a>
-      {% endif %}
+{% block title %}Premium Plans — textract.me{% endblock %}
+{% block description %}Choose the right textract.me plan for you. Free OCR and translation, or unlock Premium for faster processing, higher limits, and extra tools.{% endblock %}
+{% block keywords %}textract premium, OCR plans, image to text subscription, AI translator pricing, textract.me billing{% endblock %}
+{% block canonical %}https://textract.me/billing{% endblock %}
+
+{% block og_title %}textract.me Premium Plans — OCR & Translator Subscriptions{% endblock %}
+{% block og_description %}Upgrade your textract.me account to unlock faster AI OCR, higher image size limits, and premium translation tools.{% endblock %}
+{% block og_url %}https://textract.me/billing{% endblock %}
+{% block og_image %}https://textract.me/static/img/preview.jpg{% endblock %}
+
+{% block content %}
+<main class="flex-1 w-full max-w-6xl px-4 flex flex-col items-center">
+  <h1 class="text-3xl md:text-4xl font-bold text-center mt-8 mb-10 bg-gradient-to-r from-purple-700 via-gray-800 to-black bg-clip-text text-transparent">
+    Choose Your Plan
+  </h1>
+
+  <div class="grid gap-6 md:grid-cols-3 w-full">
+
+    <!-- FREE PLAN -->
+    <div class="bg-gray-50 rounded-2xl shadow-lg p-6 flex flex-col">
+      <h3 class="text-xl font-semibold mb-2">Free</h3>
+      <p class="text-3xl font-bold mb-4">$0 <span class="text-base font-medium">/ Month</span></p>
+      <ul class="text-sm space-y-2 mb-6">
+        <li>✔ 50 requests / week</li>
+        <li>✔ Image size up to 5 MB</li>
+        <li>✔ Normal priority</li>
+        <li>✖ No ads removal</li>
+        <li>✖ No premium tools</li>
+      </ul>
+      <button disabled
+              class="w-full py-2 rounded-lg bg-gray-300 text-gray-600 font-medium cursor-not-allowed">
+        Current Plan
+      </button>
+    </div>
+
+    <!-- PREMIUM MONTHLY -->
+    <div class="bg-gray-50 rounded-2xl shadow-lg p-6 flex flex-col border border-purple-100 hover:border-purple-400 transition">
+      <h3 class="text-xl font-semibold mb-2">Premium Monthly</h3>
+      <p class="text-3xl font-bold mb-1">$4.99 <span class="text-base font-medium">/ Month</span></p>
+      <p class="text-xs text-gray-500 mb-4">Billed Monthly</p>
+      <ul class="text-sm space-y-2 mb-6">
+        <li>✔ 10,000 requests</li>
+        <li>✔ Image size up to 30 MB</li>
+        <li>✔ 3× Faster Processing</li>
+        <li>✔ No Ads</li>
+        <li>✔ Premium tools (PDF/Text)</li>
+      </ul>
+      <button class="w-full py-2 rounded-lg text-white font-medium bg-gradient-to-r from-purple-900 via-gray-800 to-black hover:opacity-90 transition">
+        Unlock Premium
+      </button>
+    </div>
+
+    <!-- PREMIUM YEARLY -->
+    <div class="bg-gray-50 rounded-2xl shadow-lg p-6 flex flex-col border border-purple-100 hover:border-purple-400 transition">
+      <h3 class="text-xl font-semibold mb-2">Premium Yearly</h3>
+      <p class="text-3xl font-bold mb-1">$2.99 <span class="text-base font-medium">/ Month</span></p>
+      <p class="text-xs text-gray-500 mb-4">Billed yearly — $35.88</p>
+      <ul class="text-sm space-y-2 mb-6">
+        <li>✔ 150,000 requests</li>
+        <li>✔ Image size up to 30 MB</li>
+        <li>✔ 3× Faster Processing</li>
+        <li>✔ No Ads</li>
+        <li>✔ Premium tools (PDF/Text)</li>
+      </ul>
+      <button class="w-full py-2 rounded-lg text-white font-medium bg-gradient-to-r from-purple-900 via-gray-800 to-black hover:opacity-90 transition">
+        Unlock Premium
+      </button>
     </div>
   </div>
-</div>
 
-
-
-
-  <!-- HEADER -->
-  <header class="w-full max-w-6xl relative flex items-center justify-center py-6 mb-10 border-b border-gray-200">
-    <h1 class="logo text-3xl font-bold bg-gradient-to-r from-purple-700 via-gray-800 to-black bg-clip-text text-transparent">
-      textract.me — Plans
-    </h1>
-  </header>
-
-  <!-- BILLING PLANS -->
-  <main class="flex-1 w-full max-w-6xl px-4 flex flex-col items-center">
-    <div class="grid gap-6 md:grid-cols-3 w-full">
-
-      <!-- FREE PLAN -->
-      <div class="bg-gray-50 rounded-2xl shadow-lg p-6 flex flex-col">
-        <h3 class="text-xl font-semibold mb-2">Free</h3>
-        <p class="text-3xl font-bold mb-4">$0 <span class="text-base font-medium">/ Month</span></p>
-        <ul class="text-sm space-y-2 mb-6">
-          <li>✔ 50 requests / week</li>
-          <li>✔ Image size up to 5 MB</li>
-          <li>✔ Slower queue (normal priority)</li>
-          <li>✖ No ads removal</li>
-          <li>✖ No premium tools</li>
-        </ul>
-
-      </div>
-
-      <!-- Month PREMIUM -->
-  <div class="bg-gray-50 rounded-2xl shadow-lg p-6 flex flex-col">
-    <h3 class="text-xl font-semibold mb-2">Premium Monthly</h3>
-    <p class="text-3xl font-bold mb-1">$4.99 <span class="text-base font-medium">/ Month</span></p>
-    <p class="text-xs text-gray-500 mb-4">Billed Monthly</p>
-    <ul class="text-sm space-y-2 mb-6">
-      <li>✔ 10,000 requests</li>
-      <li>✔ Image size up to 30 MB</li>
-      <li>✔ 3× Faster Processing</li>
-      <li>✔ No Ads</li>
-      <li>✔ Premium tools (PDF/Text)</li>
-    </ul>
-    <button class="w-full py-2 rounded-lg text-white font-medium bg-gradient-to-r from-purple-900 via-gray-800 to-black hover:opacity-90 transition">
-      Unlock Premium
-    </button>
-  </div>
-
-  <!-- Year PREMIUM -->
-  <div class="bg-gray-50 rounded-2xl shadow-lg p-6 flex flex-col">
-    <h3 class="text-xl font-semibold mb-2">Premium Yearly</h3>
-    <p class="text-3xl font-bold mb-1">$2.99 <span class="text-base font-medium">/ Month</span></p>
-    <p class="text-xs text-gray-500 mb-4">Billed yearly $35.88</p>
-    <ul class="text-sm space-y-2 mb-6">
-      <li>✔ 150,000 requests </li>
-      <li>✔ Image size up to 30 MB</li>
-      <li>✔ 3× Faster Processing</li>
-      <li>✔ No Ads</li>
-      <li>✔ Premium tools (PDF/Text)</li>
-    </ul>
-    <button class="w-full py-2 rounded-lg text-white font-medium bg-gradient-to-r from-purple-900 via-gray-800 to-black hover:opacity-90 transition">
-      Unlock Premium
-    </button>
-  </div>
-
-
-    </div>
-  </main>
-  <script src="{{ url_for('static', path='js/logout.js') }}"></script>
-</body>
-</html>
+  <p class="text-center text-gray-600 mt-8 text-sm">
+    All plans include full access to AI-powered OCR, translation, and PDF export tools.
+    Cancel anytime.
+  </p>
+</main>
+{% endblock %}

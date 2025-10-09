@@ -7,45 +7,7 @@ const resultBlock = document.getElementById("resultBlock");
 const copyBtn = document.getElementById("copyBtn");
 const textSize = document.getElementById("textSize");
 
-async function handleLogout(e) {
-  e.preventDefault();
-  try {
-    const res = await fetch("/auth/logout", {
-      method: "GET",
-      credentials: "include" // важно, иначе кука не отправится
-    });
-    if (res.redirected) {
-      window.location.href = res.url; // редиректим на /
-    } else {
-      window.location.href = "/";
-    }
-  } catch (err) {
-    console.error("Logout failed:", err);
-  }
-}
 
-
-async function checkAuth() {
-  try {
-    const res = await fetch("/auth/me");
-
-    if (!res.ok) {
-      document.getElementById("auth-buttons").innerHTML =
-        `<a href="/auth/register" class="hover:underline">Sign in</a>`;
-      return;
-    }
-
-    const user = await res.json();
-    document.getElementById("auth-buttons").innerHTML =
-      `<a href="/account" class="hover:underline">Account</a>
-       <a href="#" onclick="handleLogout(event)" class="ml-3 text-red-400 hover:underline">Logout</a>`;
-  } catch (err) {
-    document.getElementById("auth-buttons").innerHTML =
-      `<a href="/auth/register" class="hover:underline">Sign in</a>`;
-  }
-}
-
-checkAuth();
 
 const defaultBtnHTML = processBtn.innerHTML; // сохраняем изначальное содержимое кнопки
 
