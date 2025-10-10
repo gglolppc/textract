@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     smtp_password: str
     smtp_host: str = "smtp.gmail.com"
     smtp_port: int = 587
+    smtp_from: str = "<EMAIL>"
     google_client_id: str
     google_client_secret: str
     google_redirect_uri: str
