@@ -13,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 from app.core import model
 from app.utils.security.limiter import limiter
 from app.config.config import settings
-from app.routers import upload, health, feedback, billing, account, index, admin, pdf, pages
+from app.routers import upload, health, feedback, billing, account, index, admin, pdf, pages, tts
 from app.routers.auth import auth, google_auth
 from app.routers.pages import api_router
 
@@ -69,6 +69,7 @@ app.include_router(admin.router)
 app.include_router(pdf.router)
 app.include_router(pages.router)
 app.include_router(api_router)
+app.include_router(tts.router)
 
 
 @app.get("/robots.txt", include_in_schema=False)

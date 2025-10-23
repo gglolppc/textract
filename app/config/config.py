@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     google_client_secret: str
     google_redirect_uri: str
     session_secret: str
+    redis_url: str
 
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",
