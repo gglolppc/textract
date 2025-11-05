@@ -66,9 +66,10 @@
         🖼️ Image → Text
       </a>
 
-     <a href="#" class="text-gray-400 cursor-not-allowed select-none flex items-center gap-1">
+     <a href="/text-to-speech" class="hover:text-white hover:underline transition
+                {% if request.url.path == '/text-to-speech/' %}bg-purple-700/40 text-white underline px-2 py-1 rounded{% endif %}">
       🔊 Text → Speech
-      <span class="text-[10px] bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded uppercase tracking-wide font-medium">soon</span>
+
     </a>
 
     <a href="#" class="text-gray-400 cursor-not-allowed select-none flex items-center gap-1">

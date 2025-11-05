@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from app.db.database import User
 from app.routers.auth.dependencies import get_current_user_or_none
-from app.config.plans import PLAN_LIMITS
+from app.config.plans import TTS_PLAN_LIMITS, OCR_PLAN_LIMITS
 
 from datetime import datetime
 
@@ -21,13 +21,15 @@ async def account_page(
         return response
 
     plan = user.subscription or "free"
-    plan_limit = PLAN_LIMITS.get(plan, 0)
+    plan_limit_tts = TTS_PLAN_LIMITS.get(plan, 0)
+    plan_limit_ocr = OCR_PLAN_LIMITS.get(plan, 0)
 
     user_view = {
         "id": user.id,
         "email": user.email,
         "subscription": plan,
-        "requests": user.usage_count,   # <-- берём счётчик, а не relationship
+        "requests_ocr": user.usage_count_ocr,   # <-- берём счётчик, а не relationship
+        "requests_tts": user.tts_usage,
         "created_at": (
             user.created_at.strftime("%Y-%m-%d") if user.created_at else "—"
         ),
@@ -41,6 +43,6 @@ async def account_page(
         {
             "request": request,
             "user": user_view,
-            "plan_limit": plan_limit,
+            "plan_limit": {"ocr": plan_limit_ocr, "tts": plan_limit_tts},
         },
     )

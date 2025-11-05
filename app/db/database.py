@@ -47,7 +47,8 @@ class User(Base):
     sub_expires: Mapped[Optional[datetime]] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
 
     # Учёт использования
-    usage_count: Mapped[int] = mapped_column(Integer, default=0, nullable=True)  # сколько запросов сделал
+    usage_count_ocr: Mapped[int] = mapped_column(Integer, default=0, nullable=True)  # сколько запросов сделал
+    tts_usage: Mapped[int] = mapped_column(Integer, default=0, nullable=True)  # symbols
     usage_reset_at: Mapped[Optional[datetime]] = mapped_column(
         TIMESTAMP(timezone=True),
         server_default=text("NOW()"),  # гарантированно сработает в Postgres
@@ -81,21 +82,40 @@ class RequestLog(Base):
     ip_address: Mapped[str] = mapped_column(String(50), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True),
+        server_default=func.now()
     )
 
-    status: Mapped[str] = mapped_column(String(20))          # success | fail | rejected
-    fail_reason: Mapped[str] = mapped_column(Text, nullable=True)
+    # --- статус выполнения ---
+    status: Mapped[str] = mapped_column(String(20))  # success | fail | rejected
+    fail_reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    token_used: Mapped[int] = mapped_column(Integer, default=0)
-    latency_ms: Mapped[int] = mapped_column(Integer, nullable=True)
-
-    file_size: Mapped[int] = mapped_column(Integer, nullable=True)
-    file_type: Mapped[str] = mapped_column(String(50), nullable=True)
-    detected_lang: Mapped[str] = mapped_column(String(20), nullable=True)
-
+    # --- технические метрики ---
+    latency_ms: Mapped[Optional[int]] = mapped_column(Integer)
     api_model: Mapped[str] = mapped_column(String(50), default="gpt-4o-mini")
 
+    # --- общий тип операции ---
+    module: Mapped[str] = mapped_column(
+        String(30),
+        nullable=True,
+        default="ocr"
+    )  # ocr | translate | tts | audio_to_text
+
+    # --- для TTS ---
+    text_chars: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)   # сколько символов озвучено
+    audio_duration: Mapped[Optional[float]] = mapped_column(Integer, nullable=True)  # длительность итогового аудио (сек)
+    audio_size: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)   # размер файла в байтах
+    voice_name: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+
+    # --- для OCR ---
+    file_size: Mapped[Optional[int]] = mapped_column(Integer)
+    file_type: Mapped[Optional[str]] = mapped_column(String(50))
+    detected_lang: Mapped[Optional[str]] = mapped_column(String(20))
+
+    # --- учёт токенов / символов ---
+    token_used: Mapped[int] = mapped_column(Integer, default=0)
+
+    # --- связь с пользователем ---
     user: Mapped["User"] = relationship("User", back_populates="requests")
 
 class Feedback(Base):

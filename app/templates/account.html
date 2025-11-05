@@ -25,8 +25,12 @@
   </p>
   <p><span class="font-medium">Expires:</span> {{ user.expires }}</p>
   <p>
-    <span class="font-medium">Requests:</span>
-    {{ user.requests }} / {{ plan_limit["limit"] }}
+    <span class="font-medium">Requests OCR:</span>
+    {{ user.requests_ocr or 0 }} / {{ plan_limit["ocr"]["limit"] }}
+  </p>
+  <p>
+    <span class="font-medium">Requests TTS(symbols):</span>
+    {{ user.requests_tts or 0 }} / {{ plan_limit["tts"]["total_char"] }}
   </p>
   <p><span class="font-medium">Created at:</span> {{ user.created_at }}</p>
 

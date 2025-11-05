@@ -2,19 +2,35 @@
 {% block title %}Text to Speech — textract.me{% endblock %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto mt-10 border rounded-2xl shadow-sm bg-white p-6">
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- MINI GUIDE -->
+<div class="max-w-4xl mx-auto text-center mb-8">
+  <div class="inline-flex flex-wrap justify-center gap-4 text-gray-700 text-sm md:text-base font-medium bg-gray-50 border rounded-2xl px-6 py-3 shadow-sm">
+    <div class="flex items-center gap-2">📝 <span>Write or paste your text</span></div>
+    <span class="hidden md:inline text-gray-400">→</span>
+    <div class="flex items-center gap-2">🎙️ <span>Select a voice</span></div>
+    <span class="hidden md:inline text-gray-400">→</span>
+    <div class="flex items-center gap-2">▶️ <span>Press “Generate”</span></div>
+    <span class="hidden md:inline text-gray-400">→</span>
+    <div class="flex items-center gap-2">⏳ <span>Wait for the result</span></div>
+  </div>
+</div>
+
+<div class="relative max-w-6xl mx-auto mt-10 border rounded-2xl shadow-sm bg-white p-6">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 {% if not user %}pointer-events-none select-none{% endif %}">
 
     <!-- LEFT TEXT AREA -->
     <div class="md:col-span-2 flex flex-col">
       <div class="flex items-center justify-between mb-2">
         <label class="text-sm font-medium">Enter your text</label>
-        <span id="charCount" class="text-sm text-gray-500" data-max="2000">0 / 2000</span>
+        <span id="charCount" class="text-sm text-gray-500" data-max="{{ plans[user.subscription]['max_char'] if user else 0 }}">
+          0 / {{ plans[user.subscription]['max_char'] if user else 0 }}
+        </span>
       </div>
 
       <textarea id="ttsText"
-                class="w-full h-80 border rounded-xl p-4 focus:ring-2 focus:ring-purple-500 resize-none"
-                placeholder="Type something to convert to speech..."></textarea>
+                class="w-full h-80 border rounded-xl p-4 focus:ring-2 focus:ring-purple-500 resize-none {% if not user %}bg-gray-50 text-gray-400{% endif %}"
+                placeholder="{% if user %}Type something to convert to speech...{% else %}Login required to use text-to-speech...{% endif %}"
+                {% if not user %}disabled{% endif %}></textarea>
     </div>
 
     <!-- RIGHT CONTROL PANEL -->
@@ -22,15 +38,32 @@
       <div class="w-full space-y-4">
 
         <!-- Voice row -->
-        <div class="flex items-center justify-between">
-          <label class="text-sm font-medium">Voice:</label>
-          <select id="voiceSelect"
-                  class="border rounded-lg px-3 py-1 focus:ring-2 focus:ring-purple-500 ml-3 flex-1">
-            {% for v in voices %}
-              <option value="{{v}}">{{v}}</option>
+     <div class="flex items-center justify-between">
+      <label class="text-sm font-medium">Voice:</label>
+      <div class="flex items-center gap-2 flex-1 ml-3">
+        <select id="voiceSelect"
+                class="border rounded-lg px-3 py-1 focus:ring-2 focus:ring-purple-500 flex-1 {% if not user %}bg-gray-100 text-gray-500{% endif %}"
+                {% if not user %}disabled{% endif %}>
+          {% if user %}
+           {% for key, label in voices.items() %}
+              <option value="{{key}}" title="{{label}}">{{label.split('—')[0].strip()}}</option>
             {% endfor %}
-          </select>
-        </div>
+          {% else %}
+            <option>Disabled</option>
+          {% endif %}
+        </select>
+
+        <!-- preview button -->
+    <button id="previewBtn"
+            class="flex items-center justify-center w-9 h-9 rounded-full border text-purple-600 hover:bg-purple-50 shadow-sm
+                   transition text-sm shrink-0
+                   {% if not user %}cursor-not-allowed text-gray-400{% endif %}"
+            title="Preview voice"
+            {% if not user %}disabled{% endif %}>
+      ▶️
+    </button>
+      </div>
+    </div>
 
         <!-- Duration row -->
         <div class="flex items-center justify-between">
@@ -43,142 +76,59 @@
 
         <!-- Generate button -->
         <button id="generateBtn"
-                class="w-full bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white font-semibold py-3 rounded-lg shadow transition">
-          🎧 Generate
+                class="w-full font-semibold py-3 rounded-lg shadow transition
+                       {% if user %}
+                         bg-gradient-to-r from-purple-600 to-indigo-700 hover:from-purple-700 hover:to-indigo-800 text-white
+                       {% else %}
+                         bg-gray-300 text-gray-500 cursor-not-allowed
+                       {% endif %}"
+                {% if not user %}disabled{% endif %}>
+          {% if user %}🎧 Generate{% else %}🔒 Generate (Login to use){% endif %}
         </button>
+
+        <!-- Divider -->
+        <div class="border-t border-gray-300 my-4"></div>
+
+        <!-- RESULT BLOCK -->
+        <div class="text-center">
+          <h3 class="text-lg font-semibold mb-3 text-gray-800">Result</h3>
+          <div id="statusText" class="text-sm text-gray-500 mb-4"></div>
+          <audio id="audioPlayer" controls class="w-full hidden"></audio>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- RESULT BLOCK -->
-  <div class="mt-8 border-t pt-6 text-center">
-    <h3 class="text-lg font-semibold mb-3 text-gray-800">Result</h3>
-    <div id="statusText" class="text-sm text-gray-500 mb-4"></div>
-    <audio id="audioPlayer" controls class="w-full hidden"></audio>
+  <!-- Overlay for guests -->
+  {% if not user %}
+  <div class="absolute inset-0 bg-white/40 backdrop-blur-[2px] flex flex-col justify-center items-center text-center px-6">
+    <div class="bg-white/90 border rounded-2xl p-6 shadow-md max-w-md">
+      <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-2">
+        🔐 Text-to-Speech is available for registered users
+      </h3>
+      <p class="text-gray-600 mb-5">Sign up or log in to start generating realistic voices from your text.</p>
+      <a href="/auth/register"
+         class="bg-gradient-to-r from-purple-600 to-indigo-700 text-white font-semibold px-6 py-3 rounded-xl shadow hover:from-purple-700 hover:to-indigo-800 transition">
+        Log in or Sign up
+      </a>
+    </div>
   </div>
+  {% endif %}
 </div>
 
 <!-- Toast Container -->
 <div id="toastContainer" class="fixed top-1/3 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center space-y-3"></div>
 {% endblock %}
 
+{% if user %}
 {% block extra_scripts %}
 <script>
-const textarea = document.getElementById("ttsText");
-const generateBtn = document.getElementById("generateBtn");
-const player = document.getElementById("audioPlayer");
-const voiceSelect = document.getElementById("voiceSelect");
-const durationDisplay = document.getElementById("durationDisplay");
-const charCount = document.getElementById("charCount");
-const toastContainer = document.getElementById("toastContainer");
-const statusText = document.getElementById("statusText");
-const maxChars = parseInt(charCount.dataset.max, 10) || 2000;
 
-// --- Toast helper ---
-function showToast(message, type = "error") {
-  const colors = {
-    error: "bg-red-600",
-    success: "bg-green-600",
-    info: "bg-blue-600"
+  window.appConfig = {
+    maxChars: {{ plans[user.subscription]['max_char'] | tojson if user else 0 }}
   };
-  const toast = document.createElement("div");
-  toast.className = `
-    ${colors[type] || colors.error}
-    text-white px-6 py-3 rounded-xl shadow-lg font-medium text-center
-    transition-all duration-500 opacity-0 transform translate-y-[-10px]
-  `;
-  toast.innerText = message;
-  toastContainer.appendChild(toast);
-  requestAnimationFrame(() => {
-    toast.classList.remove("opacity-0", "translate-y-[-10px]");
-    toast.classList.add("opacity-100", "translate-y-0");
-  });
-  setTimeout(() => {
-    toast.classList.remove("opacity-100", "translate-y-0");
-    toast.classList.add("opacity-0", "translate-y-[-10px]");
-    setTimeout(() => toast.remove(), 500);
-  }, 3000);
-}
-
-// --- Live duration + char counter ---
-textarea.addEventListener("input", () => {
-  const text = textarea.value;
-  const length = text.length;
-  charCount.innerText = `${length} / ${maxChars}`;
-  charCount.classList.toggle("text-red-600", length > maxChars);
-  charCount.classList.toggle("text-gray-500", length <= maxChars);
-
-  const trimmed = text.trim();
-  if (!trimmed) {
-    durationDisplay.innerText = "0:00";
-    return;
-  }
-  const words = trimmed.split(/\s+/).length;
-  const seconds = Math.round((words / 150) * 60);
-  const min = Math.floor(seconds / 60);
-  const sec = seconds % 60;
-  durationDisplay.innerText = `${min}:${sec.toString().padStart(2, "0")}`;
-});
-
-// --- Polling Celery task ---
-async function pollStatus(taskId) {
-  try {
-    const res = await fetch(`/text-to-speech/status/${taskId}`);
-    const data = await res.json();
-
-    if (data.status === "done") {
-      player.src = data.audio_url;
-      player.classList.remove("hidden");
-      player.load();
-      statusText.innerText = "✅ Audio ready!";
-      showToast("Audio generated successfully!", "success");
-    } else if (data.status === "error") {
-      statusText.innerText = "❌ Generation failed.";
-      showToast(data.message || "Generation failed.", "error");
-    } else {
-      statusText.innerText = `⏳ ${data.status}...`;
-      setTimeout(() => pollStatus(taskId), 3000);
-    }
-  } catch (err) {
-    statusText.innerText = "⚠️ Connection error";
-    console.error(err);
-    setTimeout(() => pollStatus(taskId), 5000);
-  }
-}
-
-// --- Generate TTS ---
-generateBtn.addEventListener("click", async () => {
-  const text = textarea.value.trim();
-  if (!text) return showToast("Please enter text first.", "info");
-  if (text.length > maxChars) return showToast("Text too long. Please stay under limit.", "error");
-
-  generateBtn.disabled = true;
-  generateBtn.innerText = "Queuing...";
-  player.classList.add("hidden");
-  statusText.innerText = "";
-
-  try {
-    const res = await fetch("/text-to-speech", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, voice: voiceSelect.value })
-    });
-
-    const data = await res.json();
-    if (data.error) {
-      showToast(data.error, "error");
-      return;
-    }
-
-    showToast("Task queued. Please wait...", "info");
-    statusText.innerText = "⏳ Task queued...";
-    pollStatus(data.task_id);
-  } catch (err) {
-    showToast("⚠️ Error: " + err.message, "error");
-  } finally {
-    generateBtn.disabled = false;
-    generateBtn.innerText = "🎧 Generate";
-  }
-});
 </script>
+<script src="{{ url_for('static', path='js/tts_preview.js') }}"></script>
+<script src="{{ url_for('static', path='js/tts.js') }}"></script>
 {% endblock %}
+{% endif %}

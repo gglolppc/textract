@@ -58,7 +58,7 @@ async def register_user(
     await session.refresh(user)
     await send_mail(user.email, "textract OTP confirmation code", otp_code)
 
-    # редиректим на confirm с user_id
+    # редиректим на confirm
     return RedirectResponse(url=f"/auth/confirm?token={uuid_token}", status_code=303)
 
 # Шаг 2. Страница подтверждения

@@ -5,7 +5,7 @@ from PIL import Image
 from fastapi import APIRouter, UploadFile, File, HTTPException, Request, Form, Depends
 from starlette.concurrency import run_in_threadpool
 
-from app.config.plans import check_and_increment_usage
+from app.config.plans import increment_ocr_usage
 from app.routers.auth.dependencies import get_current_user_or_none
 from app.utils.img_utils.text_validator import has_text
 from app.utils.security.ids import new_id
@@ -38,7 +38,7 @@ async def upload_file(
     )
     session.add(log_entry)
     if user:
-        check_and_increment_usage(user)
+        increment_ocr_usage(user)
     await session.flush()
 
     max_bytes = settings.max_upload_mb * 1024 * 1024
