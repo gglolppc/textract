@@ -106,11 +106,14 @@ class RequestLog(Base):
     audio_duration: Mapped[Optional[float]] = mapped_column(Integer, nullable=True)  # длительность итогового аудио (сек)
     audio_size: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)   # размер файла в байтах
     voice_name: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    audio_link: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
 
     # --- для OCR ---
-    file_size: Mapped[Optional[int]] = mapped_column(Integer)
-    file_type: Mapped[Optional[str]] = mapped_column(String(50))
-    detected_lang: Mapped[Optional[str]] = mapped_column(String(20))
+    file_size: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    file_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    detected_lang: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    pdf_link: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    extracted_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     # --- учёт токенов / символов ---
     token_used: Mapped[int] = mapped_column(Integer, default=0)

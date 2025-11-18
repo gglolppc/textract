@@ -3,16 +3,17 @@ import time
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy import select
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import RequestLog, User, get_session
 from app.routers.auth.dependencies import get_current_user_or_none
 from app.utils.security.get_ip import get_client_ip
 from app.workers.celery_app import celery_app
-from app.workers.tts_tasks import generate_tts_task
+from app.workers.tts_tasks import generate_tts_task_worker
 from app.utils.tts.spell_checker import is_meaningful_text
 from app.config.plans import TTS_PLAN_LIMITS, increment_tts_usage
 
@@ -119,17 +120,19 @@ async def generate_tts(
     )
     session.add(log_entry)
     await session.commit()
+    await session.refresh(log_entry)
 
     # --- Отправляем задачу в Celery ---
     try:
-        task = generate_tts_task.delay(text, data.voice)
+        task = generate_tts_task_worker.delay(text, data.voice, log_entry.id)
         return {
             "task_id": task.id,
             "status": "queued",
             "poll_url": f"/text-to-speech/status/{task.id}",
             "chars_used": char_count,
             "limit_total": total_limit,
-            "used_total": user.tts_usage
+            "used_total": user.tts_usage,
+            "log_id": log_entry.id,
         }
 
     except Exception as e:
@@ -142,27 +145,51 @@ async def generate_tts(
 
 @router.get("/status/{task_id}")
 async def get_tts_status(task_id: str):
-    task = generate_tts_task.AsyncResult(task_id)
+    task = generate_tts_task_worker.AsyncResult(task_id)
 
     if task.state == "PENDING":
         return {"status": "queued"}
     elif task.state == "STARTED":
         return {"status": "processing"}
     elif task.state == "SUCCESS":
-        result = task.result
+        result = task.result or {}
+
+        if result.get("status") == "fail":
+            return {"status": "error", "message": result.get("error", "Unknown error")}
+
         return {
             "status": "done",
-            "audio_url": result["url"],
-            "filename": result["filename"]
+            "audio_url": result.get("url"),
+            "filename": result.get("filename")
         }
     elif task.state == "FAILURE":
         return {"status": "error", "message": str(task.info)}
     else:
         return {"status": task.state.lower()}
 
+
 @router.get("/download/{filename}")
-async def download_audio(filename: str):
-    file_path = os.path.join("app/static/audio", filename)
+async def download_audio(
+    filename: str,
+    session: AsyncSession = Depends(get_session),
+    user: User | None = Depends(get_current_user_or_none)
+):
+    # 🔍 Ищем запись с этим файлом
+    result = await session.execute(
+        select(RequestLog).where(RequestLog.audio_link == filename)
+    )
+    log = result.scalar_one_or_none()
+
+    if not log:
+        raise HTTPException(status_code=404, detail="File not found in logs")
+
+    # 🔒 Проверяем принадлежность файла
+    if log.user_id != user.id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+    # 📂 Проверяем, что файл существует физически
+    file_path = os.path.join("app/static/tts", filename)
     if not os.path.exists(file_path):
-        return JSONResponse({"error": "File not found"}, status_code=404)
+        raise HTTPException(status_code=410, detail="File deleted or expired")
+
     return FileResponse(file_path, media_type="audio/wav", filename=filename)

@@ -83,12 +83,14 @@ async def upload_file(
             return {"text": f"Fail to extract – {result.fail_reason}"}
 
         log_entry.status = "success"
-        await session.commit()
-
         if language == "original":
-            return {"text": result.extracted_text}
+            ocr_text = result.extracted_text
         else:
-            return {"text": result.translated_text}
+            ocr_text = result.translated_text
+
+        log_entry.extracted_text = ocr_text
+        await session.commit()
+        return {"text": ocr_text}
 
     except Exception as e:
         log_entry.status = "failed"

@@ -13,7 +13,8 @@ from fastapi.staticfiles import StaticFiles
 from app.core import model
 from app.utils.security.limiter import limiter
 from app.config.config import settings
-from app.routers import upload, health, feedback, billing, account, index, admin, pdf, pages, tts
+from app.routers import upload, health, feedback, billing, index, admin, pdf, pages, tts
+from app.routers.user import account
 from app.routers.auth import auth, google_auth
 from app.routers.pages import api_router
 

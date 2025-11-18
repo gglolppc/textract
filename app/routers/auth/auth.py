@@ -54,6 +54,7 @@ async def register_user(
         user.otp_expires = otp_expires
         user.uuid_token = uuid_token
         user.updated_at = datetime.now(timezone.utc)
+        user.last_login_at = datetime.now(timezone.utc)
     await session.commit()
     await session.refresh(user)
     await send_mail(user.email, "textract OTP confirmation code", otp_code)
