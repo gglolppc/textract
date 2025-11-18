@@ -64,7 +64,7 @@ async def account_history(
         response = RedirectResponse("/auth/register", status_code=303)
         response.delete_cookie("access_token")
         return response
-    if user.subscription != "pro" or user.subscription != "premium":
+    if user.subscription == "free":
         return templates.TemplateResponse("account_history_free.html", {
             "request": request,
             "user": user,
