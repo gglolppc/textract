@@ -1,4 +1,5 @@
 const fileInput = document.getElementById("fileInput");
+const dropArea = document.getElementById("dropArea");
 const fileName = document.getElementById("fileName");
 const previewContainer = document.getElementById("previewContainer");
 const previewImg = document.getElementById("previewImg");
@@ -6,7 +7,83 @@ const processBtn = document.getElementById("processBtn");
 const resultBlock = document.getElementById("resultBlock");
 const copyBtn = document.getElementById("copyBtn");
 const textSize = document.getElementById("textSize");
+const toggle = document.getElementById("toggleEdit");
+let editing = false;
 
+/* Общая функция */
+function handleFile(file) {
+    if (!file) return;
+
+    fileName.innerText = "Selected: " + file.name;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        previewImg.src = e.target.result;
+        previewContainer.classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+}
+
+/* Перетаскивание */
+dropArea.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropArea.classList.add(
+        "border-purple-500",
+        "bg-purple-50",
+        "shadow-[0_0_15px_rgba(128,0,255,0.25)]",
+        "scale-[1.01]"
+    );
+});
+
+dropArea.addEventListener("dragleave", () => {
+    dropArea.classList.remove(
+        "border-purple-500",
+        "bg-purple-50",
+        "shadow-[0_0_15px_rgba(128,0,255,0.25)]",
+        "scale-[1.01]"
+    );
+});
+
+dropArea.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropArea.classList.remove(
+        "border-purple-500",
+        "bg-purple-50",
+        "shadow-[0_0_15px_rgba(128,0,255,0.25)]",
+        "scale-[1.01]"
+    );
+
+    const file = e.dataTransfer.files[0];
+    if (file) {
+        fileInput.files = e.dataTransfer.files;
+        handleFile(file);
+    }
+});
+
+
+fileInput.addEventListener("change", () => {
+    if (fileInput.files.length > 0) {
+        fileName.textContent = fileInput.files[0].name;
+    }
+});
+
+toggle.addEventListener("click", () => {
+    editing = !editing;
+
+    resultBlock.contentEditable = editing;
+
+    if (editing) {
+        resultBlock.classList.add("bg-white", "border");
+        resultBlock.classList.remove("bg-gray-50");
+        toggle.classList.add("bg-green-100")
+        toggle.textContent = "Save";
+    } else {
+        resultBlock.classList.remove("bg-white", "border");
+        resultBlock.classList.add("bg-gray-50");
+        toggle.classList.remove("bg-green-100")
+        toggle.textContent = "Edit";
+    }
+});
 
 
 const defaultBtnHTML = processBtn.innerHTML; // сохраняем изначальное содержимое кнопки

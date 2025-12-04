@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import AsyncGenerator, Optional
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession, AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import DateTime, func, Integer, String, Text, Boolean, ForeignKey, Enum
+from sqlalchemy import DateTime, func, Integer, String, Text, Boolean, ForeignKey, Enum, JSON
 from app.config.config import settings
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.sql import text
@@ -71,6 +71,11 @@ class User(Base):
     requests: Mapped[list["RequestLog"]] = relationship(
         "RequestLog", back_populates="user", cascade="all, delete-orphan"
     )
+    extract_logs: Mapped[list["ExtractLog"]] = relationship(
+        "ExtractLog",
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
 
 class RequestLog(Base):
     __tablename__ = "requests"
@@ -120,6 +125,26 @@ class RequestLog(Base):
 
     # --- связь с пользователем ---
     user: Mapped["User"] = relationship("User", back_populates="requests")
+
+class ExtractLog(Base):
+    __tablename__ = "extract_logs"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+
+    raw_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    json_data: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
+
+    excel_link: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    pdf_link: Mapped[str | None] = mapped_column(String(255), nullable=True)
+
+    user: Mapped["User"] = relationship("User", back_populates="extract_logs")
+
 
 class Feedback(Base):
     __tablename__ = "feedbacks"

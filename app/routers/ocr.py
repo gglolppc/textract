@@ -1,3 +1,5 @@
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 import time
 import traceback
 from io import BytesIO
@@ -18,9 +20,26 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_session, RequestLog, User
 from app.utils.security.get_ip import get_client_ip
 
-router = APIRouter()
+router = APIRouter(prefix="/img-to-text", tags=["ocr"])
+templates = Jinja2Templates(directory="app/templates")
 
-@router.post("/")
+@router.get("/", response_class=HTMLResponse)
+async def ocr_page(
+    request: Request,
+    user: User | None = Depends(get_current_user_or_none),
+):
+    if user:
+        return templates.TemplateResponse("ocr.html", {
+            "request": request,
+            "user": user,
+        })
+    else:
+        return templates.TemplateResponse("ocr.html", {
+            "request": request
+        })
+
+
+@router.post("/upload")
 @limiter.limit("2/day", exempt_when=exempt_authenticated)
 async def upload_file(
     request: Request,
